@@ -1,7 +1,9 @@
 import math
 import os
+import sys
 from collections import defaultdict
 from typing import List, Tuple
+import csv
 
 
 def read_date_from_file(filename: str) -> List[Tuple[float]]:
@@ -30,39 +32,67 @@ def get_centroids(bins):
     return centroids
 
 
-def main():
-    k = 7
-    epsilon = 0.001
-    iterations = 200
-    # Read the data
-    data_points = read_date_from_file(filename="input_2.txt")
-    centroids = data_points[:k]
-    iteration_number = 0
-    epsilon_condition = True
-    while epsilon_condition and iteration_number < iterations:
-        epsilon_condition = False
-        bins = defaultdict(list)
-        for data_point in data_points:
-            nearest_distance = get_distance_between_points(centroids[0], data_point)
-            nearest_centroid_id = 0
-            for centroid_id, centroid in enumerate(centroids):
-                distance_to_centroid = get_distance_between_points(centroid, data_point)
-                if distance_to_centroid < nearest_distance:
-                    nearest_distance = distance_to_centroid
-                    nearest_centroid_id = centroid_id
-            bins[nearest_centroid_id].append(data_point)
-        new_centroids = get_centroids(bins)
-        for i in range(len(new_centroids)):
-            centroid = centroids[i]
-            new_centroid = new_centroids[i]
-            distance_between_centroids = math.sqrt(sum([(x0 - x1) ** 2 for x0, x1 in zip(centroid, new_centroid)]))
-            if distance_between_centroids >= epsilon:
-                epsilon_condition = True
-        centroids = new_centroids
-        iteration_number += 1
+def parse_command_line():
+    if len(sys.argv) == 5:
+        k, iterations, file_input, file_output  = int(sys.argv[1]), int(sys.argv[2]), sys.argv[3], sys.argv[4]
+    elif len(sys.argv) == 4:
+        k, iterations, file_input, file_output = int(sys.argv[1]), 200, sys.argv[2], sys.argv[3]
+    else:
+        raise ValueError
 
-    for centroid in centroids:
-        print(centroid)
+    return k, iterations, file_input, file_output
+
+def main():
+
+    try:
+        try:
+            k, iterations, file_input, file_output = parse_command_line()
+        except ValueError as e:
+            print("Invalid Input!")
+            return
+
+        epsilon = 0.001
+        parse_command_line()
+
+        # Read the data
+        data_points = read_date_from_file(filename=file_input)
+        centroids = data_points[:k]
+        iteration_number = 0
+        epsilon_condition = True
+        while epsilon_condition and iteration_number < iterations:
+            epsilon_condition = False
+            bins = defaultdict(list)
+            for data_point in data_points:
+                nearest_distance = get_distance_between_points(centroids[0], data_point)
+                nearest_centroid_id = 0
+                for centroid_id, centroid in enumerate(centroids):
+                    distance_to_centroid = get_distance_between_points(centroid, data_point)
+                    if distance_to_centroid < nearest_distance:
+                        nearest_distance = distance_to_centroid
+                        nearest_centroid_id = centroid_id
+                bins[nearest_centroid_id].append(data_point)
+            new_centroids = get_centroids(bins)
+            for i in range(len(new_centroids)):
+                centroid = centroids[i]
+                new_centroid = new_centroids[i]
+                distance_between_centroids = math.sqrt(sum([(x0 - x1) ** 2 for x0, x1 in zip(centroid, new_centroid)]))
+                if distance_between_centroids >= epsilon:
+                    epsilon_condition = True
+            centroids = new_centroids
+            iteration_number += 1
+
+        write_centroids_to_file(file_output, centroids)
+
+    except:
+        print("An Error Has Occurred")
+
+
+def write_centroids_to_file(file_output, centroids):
+    with open(file_output, "w") as f:
+        for centroid in centroids:
+            for element in centroid[:-1:]:
+                f.write(str("%.4f" % element) + ",")
+            f.write(str("%.4f" % centroid[-1]) + "\n")
 
 
 if __name__ == '__main__':
