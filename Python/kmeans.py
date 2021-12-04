@@ -3,7 +3,6 @@ import os
 import sys
 from collections import defaultdict
 from typing import List, Tuple
-import csv
 
 
 def read_date_from_file(filename: str) -> List[Tuple[float]]:
@@ -34,7 +33,7 @@ def get_centroids(bins):
 
 def parse_command_line():
     if len(sys.argv) == 5:
-        k, iterations, file_input, file_output  = int(sys.argv[1]), int(sys.argv[2]), sys.argv[3], sys.argv[4]
+        k, iterations, file_input, file_output = int(sys.argv[1]), int(sys.argv[2]), sys.argv[3], sys.argv[4]
     elif len(sys.argv) == 4:
         k, iterations, file_input, file_output = int(sys.argv[1]), 200, sys.argv[2], sys.argv[3]
     else:
@@ -42,12 +41,12 @@ def parse_command_line():
 
     return k, iterations, file_input, file_output
 
-def main():
 
+def main():
     try:
         try:
             k, iterations, file_input, file_output = parse_command_line()
-        except ValueError as e:
+        except ValueError:
             print("Invalid Input!")
             return
 
