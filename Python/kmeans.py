@@ -45,7 +45,7 @@ def parse_command_line():
     return k, iterations, file_input, file_output
 
 
-def get_centroids_from_data_points(data_points, k, iterations):
+def get_centroids_from_data_points(data_points, k, iterations=DEFAULT_ITERATIONS_NUMBER):
     epsilon = 0.001
     centroids = data_points[:k]
     iteration_number = 0
