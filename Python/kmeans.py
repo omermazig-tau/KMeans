@@ -20,7 +20,7 @@ def get_distance_between_points(point_1, point_2):
     return distance
 
 
-def get_centroids(bins):
+def get_centroids_from_bins(bins):
     centroids = []
     for bin_id in range(len(bins)):
         data_points = bins[bin_id]
@@ -70,7 +70,7 @@ def main():
                         nearest_distance = distance_to_centroid
                         nearest_centroid_id = centroid_id
                 bins[nearest_centroid_id].append(data_point)
-            new_centroids = get_centroids(bins)
+            new_centroids = get_centroids_from_bins(bins)
             for i in range(len(new_centroids)):
                 centroid = centroids[i]
                 new_centroid = new_centroids[i]
