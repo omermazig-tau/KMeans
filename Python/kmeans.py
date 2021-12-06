@@ -84,6 +84,7 @@ def main():
 
     except:
         print("An Error Has Occurred")
+        return
 
 
 def write_centroids_to_file(file_output, centroids):
