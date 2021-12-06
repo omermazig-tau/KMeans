@@ -4,6 +4,8 @@ import sys
 from collections import defaultdict
 from typing import List, Tuple
 
+DEFAULT_ITERATIONS_NUMBER = 200
+
 
 def read_date_from_file(filename: str) -> List[Tuple[float]]:
     path = os.path.join(os.path.dirname(os.path.realpath(__file__)), filename)
@@ -36,7 +38,7 @@ def parse_command_line():
     if len(sys.argv) == 5:
         k, iterations, file_input, file_output = int(sys.argv[1]), int(sys.argv[2]), sys.argv[3], sys.argv[4]
     elif len(sys.argv) == 4:
-        k, iterations, file_input, file_output = int(sys.argv[1]), 200, sys.argv[2], sys.argv[3]
+        k, iterations, file_input, file_output = int(sys.argv[1]), DEFAULT_ITERATIONS_NUMBER, sys.argv[2], sys.argv[3]
     else:
         raise ValueError
 
