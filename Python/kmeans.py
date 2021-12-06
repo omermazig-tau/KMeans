@@ -52,7 +52,6 @@ def main():
             return
 
         epsilon = 0.001
-        parse_command_line()
 
         # Read the data
         data_points = read_date_from_file(filename=file_input)
