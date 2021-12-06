@@ -43,6 +43,36 @@ def parse_command_line():
     return k, iterations, file_input, file_output
 
 
+def get_centroids_from_data_points(data_points, k, iterations):
+    epsilon = 0.001
+    centroids = data_points[:k]
+    iteration_number = 0
+    epsilon_condition = True
+    while epsilon_condition and iteration_number < iterations:
+        epsilon_condition = False
+        bins = defaultdict(list)
+        for data_point in data_points:
+            nearest_distance = get_distance_between_points(centroids[0], data_point)
+            nearest_centroid_id = 0
+            for centroid_id, centroid in enumerate(centroids):
+                distance_to_centroid = get_distance_between_points(centroid, data_point)
+                if distance_to_centroid < nearest_distance:
+                    nearest_distance = distance_to_centroid
+                    nearest_centroid_id = centroid_id
+            bins[nearest_centroid_id].append(data_point)
+        new_centroids = get_centroids_from_bins(bins)
+        for i in range(len(new_centroids)):
+            centroid = centroids[i]
+            new_centroid = new_centroids[i]
+            distance_between_centroids = math.sqrt(sum([(x0 - x1) ** 2 for x0, x1 in zip(centroid, new_centroid)]))
+            if distance_between_centroids >= epsilon:
+                epsilon_condition = True
+        centroids = new_centroids
+        iteration_number += 1
+
+    return centroids
+
+
 def main():
     try:
         try:
@@ -51,35 +81,9 @@ def main():
             print("Invalid Input!")
             return
 
-        epsilon = 0.001
-
         # Read the data
         data_points = read_date_from_file(filename=file_input)
-        centroids = data_points[:k]
-        iteration_number = 0
-        epsilon_condition = True
-        while epsilon_condition and iteration_number < iterations:
-            epsilon_condition = False
-            bins = defaultdict(list)
-            for data_point in data_points:
-                nearest_distance = get_distance_between_points(centroids[0], data_point)
-                nearest_centroid_id = 0
-                for centroid_id, centroid in enumerate(centroids):
-                    distance_to_centroid = get_distance_between_points(centroid, data_point)
-                    if distance_to_centroid < nearest_distance:
-                        nearest_distance = distance_to_centroid
-                        nearest_centroid_id = centroid_id
-                bins[nearest_centroid_id].append(data_point)
-            new_centroids = get_centroids_from_bins(bins)
-            for i in range(len(new_centroids)):
-                centroid = centroids[i]
-                new_centroid = new_centroids[i]
-                distance_between_centroids = math.sqrt(sum([(x0 - x1) ** 2 for x0, x1 in zip(centroid, new_centroid)]))
-                if distance_between_centroids >= epsilon:
-                    epsilon_condition = True
-            centroids = new_centroids
-            iteration_number += 1
-
+        centroids = get_centroids_from_data_points(data_points, k, iterations)
         write_centroids_to_file(file_output, centroids)
 
     except:
