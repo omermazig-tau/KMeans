@@ -22,7 +22,8 @@ def get_distance_between_points(point_1, point_2):
 
 def get_centroids(bins):
     centroids = []
-    for data_points in bins.values():
+    for bin_id in range(len(bins)):
+        data_points = bins[bin_id]
         sum_dimensions = [0] * len(data_points[0])
         for vector in data_points:
             for i in range(len(vector)):
