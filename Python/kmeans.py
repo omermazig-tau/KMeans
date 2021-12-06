@@ -5,11 +5,11 @@ from collections import defaultdict
 from typing import List, Tuple
 
 DEFAULT_ITERATIONS_NUMBER = 200
+EPSILON = 0.001
 
 
-def read_date_from_file(filename: str) -> List[Tuple[float]]:
-    path = os.path.join(os.path.dirname(os.path.realpath(__file__)), filename)
-    with open(path, 'r') as file1:
+def read_date_from_file(filepath: str) -> List[Tuple[float]]:
+    with open(filepath, 'r') as file1:
         data_points = file1.read().splitlines()
     data_points = [tuple([float(i) for i in line.split(",")]) for line in data_points]
     return data_points
@@ -46,7 +46,6 @@ def parse_command_line():
 
 
 def get_centroids_from_data_points(data_points, k, iterations=DEFAULT_ITERATIONS_NUMBER):
-    epsilon = 0.001
     centroids = data_points[:k]
     iteration_number = 0
     epsilon_condition = True
@@ -67,7 +66,7 @@ def get_centroids_from_data_points(data_points, k, iterations=DEFAULT_ITERATIONS
             centroid = centroids[i]
             new_centroid = new_centroids[i]
             distance_between_centroids = math.sqrt(sum([(x0 - x1) ** 2 for x0, x1 in zip(centroid, new_centroid)]))
-            if distance_between_centroids >= epsilon:
+            if distance_between_centroids >= EPSILON:
                 epsilon_condition = True
         centroids = new_centroids
         iteration_number += 1
@@ -84,7 +83,8 @@ def main():
             return
 
         # Read the data
-        data_points = read_date_from_file(filename=file_input)
+        filepath = os.path.join(os.path.dirname(os.path.realpath(__file__)), file_input)
+        data_points = read_date_from_file(filepath=filepath)
         centroids = get_centroids_from_data_points(data_points, k, iterations)
         write_centroids_to_file(file_output, centroids)
 
