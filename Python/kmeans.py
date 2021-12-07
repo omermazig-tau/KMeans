@@ -42,10 +42,16 @@ def parse_command_line():
     else:
         raise ValueError
 
+    if k < 0 or iterations < 0:
+        raise ValueError
+
     return k, iterations, file_input, file_output
 
 
 def get_centroids_from_data_points(data_points, k, iterations=DEFAULT_ITERATIONS_NUMBER):
+    if k == 0:
+        return []
+
     centroids = data_points[:k]
     iteration_number = 0
     epsilon_condition = True
