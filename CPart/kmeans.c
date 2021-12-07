@@ -67,22 +67,22 @@ int main(int argc, char *argv[]) {
     double **dataPoints;
     double **centroids;
     double **newCentroids;
-    int *centroidsLengths;
+    unsigned int *centroidsLengths;
     unsigned int i;
-    int j;
-    int m;
+    unsigned int j;
+    unsigned int m;
     double minDistance;
     double tempDistance;
-    int closestCentroid;
+    unsigned int closestCentroid;
     FILE *f;
     double epsilon = 0.001;
     char *strK = NULL;
     char *strIter = NULL;
-    int iterations = 200;
-    int currentIteration = 0;
-    int cols = 0;
-    int rows = 1;
-    int epsilonCondition = TRUE;
+    unsigned int iterations = 200;
+    unsigned int currentIteration = 0;
+    unsigned int cols = 0;
+    unsigned int rows = 1;
+    unsigned int epsilonCondition = TRUE;
     char c = '0';
 
 
