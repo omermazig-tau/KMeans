@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
     double **centroids;
     double **newCentroids;
     int *centroidsLengths;
-    int i;
+    unsigned int i;
     int j;
     int m;
     double minDistance;
