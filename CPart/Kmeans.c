@@ -12,6 +12,7 @@ int isNumber(char str[]);
 double **createMatrix(int rows, int cols);
 double getDistance(double * point1, double * point2, int dimNum);
 void copyArrayIntoArray(double ** arrayToChange, double ** arrayToCopy, int rows, int cols);
+void freeMatrixMemory(double ** matrixToFree, int rows);
 
 double ** createMatrix(int rows, int cols) {
     int i;
@@ -41,6 +42,14 @@ int isNumber(char str[]) {
     return TRUE;
 }
 
+void freeMatrixMemory(double ** matrixToFree, int rows){
+    int i;
+    for (i = 0; i < rows; i++) {
+        free(matrixToFree[i]);
+    }
+    free(matrixToFree);
+}
+
 void copyArrayIntoArray(double **arrayToChange, double **arrayToCopy, int rows, int cols) {
     int i;
     int j;
@@ -64,7 +73,7 @@ int main(int argc, char *argv[]) {
     int cols = 0;
     int rows = 1;
     int epsilonCondition = TRUE;
-    char c;
+    char c = '0';
 
 
     if (argc < 4 || argc > 5) {
@@ -94,8 +103,6 @@ int main(int argc, char *argv[]) {
 
     //Read file
     FILE *f;
-    int length;
-    char * dataPointsStr;
 
     f = fopen(input_file, "r");
     if(f) {
@@ -180,9 +187,9 @@ int main(int argc, char *argv[]) {
             }
             fclose(f);
         }
-        free(dataPoints);
-        free(centroids);
-        free(newCentroids);
+        freeMatrixMemory(dataPoints, rows);
+        freeMatrixMemory(centroids, k);
+        freeMatrixMemory(newCentroids, k);
         free(centroidsLengths);
         return 0;
 
