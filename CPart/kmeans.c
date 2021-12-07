@@ -65,6 +65,16 @@ int main(int argc, char *argv[]) {
     int k;
     char *input_file;
     char *output_file;
+    double **dataPoints;
+    double **centroids;
+    double **newCentroids;
+    int *centroidsLengths;
+    int i;
+    int j;
+    int m;
+    double minDistance;
+    double tempDistance;
+    int closestCentroid;
     double epsilon = 0.001;
     char *strK = NULL;
     char *strIter = NULL;
@@ -114,24 +124,10 @@ int main(int argc, char *argv[]) {
         }
         rewind(f);
 
-        double **dataPoints;
-        double **centroids;
-        double **newCentroids;
-        int *centroidsLengths;
-
         dataPoints = createMatrix(rows, cols);
         centroids = createMatrix(k, cols);
         newCentroids = createMatrix(k, cols);
         centroidsLengths = calloc(k, sizeof(int));
-
-
-        int i;
-        int j;
-        int m;
-        double minDistance;
-        double tempDistance;
-        int closestCentroid;
-
 
         for(i = 0; i < rows; i++) {
             for(j = 0; j < cols; j++) {
