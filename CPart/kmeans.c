@@ -15,7 +15,7 @@ void copyArrayIntoArray(double ** arrayToChange, double ** arrayToCopy, int rows
 void freeMatrixMemory(double ** matrixToFree, int rows);
 
 double ** createMatrix(int rows, int cols) {
-    int i;
+    unsigned int i;
     double **array = (double **) malloc(rows * sizeof(double  *));
     for(i = 0; i < rows; i++) {
         array[i] = (double *) malloc(cols * sizeof(double));
@@ -24,7 +24,7 @@ double ** createMatrix(int rows, int cols) {
 }
 
 double getDistance(double * point1, double * point2, int dimNum) {
-    int i;
+    unsigned int i;
     double sum = 0;
     for(i = 0; i < dimNum; i++) {
         sum += pow(point1[i] - point2[i], 2);
@@ -33,7 +33,7 @@ double getDistance(double * point1, double * point2, int dimNum) {
 }
 
 int isNumber(char str[]) {
-    int i;
+    unsigned int i;
     for(i = 0; i < strlen(str); i++) {
         if(str[i] < '0' || str[i] > '9' ) {
             return FALSE;
@@ -43,7 +43,7 @@ int isNumber(char str[]) {
 }
 
 void freeMatrixMemory(double ** matrixToFree, int rows){
-    int i;
+    unsigned int i;
     for (i = 0; i < rows; i++) {
         free(matrixToFree[i]);
     }
@@ -51,8 +51,8 @@ void freeMatrixMemory(double ** matrixToFree, int rows){
 }
 
 void copyArrayIntoArray(double **arrayToChange, double **arrayToCopy, int rows, int cols) {
-    int i;
-    int j;
+    unsigned int i;
+    unsigned int j;
     for (i=0;i<rows;i++) {
         for (j = 0; j < cols; j++) {
             arrayToChange[i][j] = arrayToCopy[i][j];
