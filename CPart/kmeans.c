@@ -99,7 +99,6 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     k = atoi(argv[1]);
-    //End getting data from command line
 
     //Read file
     FILE *f;
@@ -115,10 +114,15 @@ int main(int argc, char *argv[]) {
         }
         rewind(f);
 
-        double **dataPoints = createMatrix(rows, cols);
-        double **centroids = createMatrix(k, cols);
-        double **newCentroids = createMatrix(k, cols);
-        int *centroidsLengths = calloc(k ,sizeof(int));
+        double **dataPoints;
+        double **centroids;
+        double **newCentroids;
+        int *centroidsLengths;
+
+        dataPoints = createMatrix(rows, cols);
+        centroids = createMatrix(k, cols);
+        newCentroids = createMatrix(k, cols);
+        centroidsLengths = calloc(k, sizeof(int));
 
 
         int i;
