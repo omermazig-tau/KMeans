@@ -61,7 +61,7 @@ void copyArrayIntoArray(double **arrayToChange, double **arrayToCopy, int rows, 
 }
 
 int main(int argc, char *argv[]) {
-    int k;
+    unsigned int k;
     char *input_file;
     char *output_file;
     double **dataPoints;
