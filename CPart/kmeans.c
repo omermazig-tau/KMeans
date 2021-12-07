@@ -63,7 +63,8 @@ void copyArrayIntoArray(double **arrayToChange, double **arrayToCopy, int rows, 
 int main(int argc, char *argv[]) {
     // Get data from command line
     int k;
-    double epsilon = 0.001;
+    double epsilon;
+    epsilon = 0.001;
     char *strK = NULL;
     char *strIter = NULL;
     int iterations = 200;
@@ -192,10 +193,10 @@ int main(int argc, char *argv[]) {
         freeMatrixMemory(newCentroids, k);
         free(centroidsLengths);
         return 0;
-
     }
     else {
         printf("An Error Has Occurred");
         return 1;
     }
+    return 0;
 }
