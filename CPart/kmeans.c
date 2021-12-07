@@ -74,6 +74,7 @@ int main(int argc, char *argv[]) {
     double minDistance;
     double tempDistance;
     int closestCentroid;
+    FILE *f;
     double epsilon = 0.001;
     char *strK = NULL;
     char *strIter = NULL;
@@ -108,8 +109,6 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     k = atoi(argv[1]);
-
-    FILE *f;
 
     f = fopen(input_file, "r");
     if(f) {
