@@ -63,14 +63,13 @@ void copyArrayIntoArray(double **arrayToChange, double **arrayToCopy, int rows, 
 int main(int argc, char *argv[]) {
     // Get data from command line
     int k;
-    double epsilon;
-    epsilon = 0.001;
+    char *input_file;
+    char *output_file;
+    double epsilon = 0.001;
     char *strK = NULL;
     char *strIter = NULL;
     int iterations = 200;
     int currentIteration = 0;
-    char *input_file;
-    char *output_file;
     int cols = 0;
     int rows = 1;
     int epsilonCondition = TRUE;
