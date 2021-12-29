@@ -1,22 +1,7 @@
 import numpy as np
 import pandas as pd
 import os
-import sys
-from kmeans import DEFAULT_ITERATIONS_NUMBER
-
-
-def parse_command_line():
-    if len(sys.argv) == 5:
-        k, iterations, file_name_1, file_name_2 = int(sys.argv[1]), int(sys.argv[2]), sys.argv[3], sys.argv[4]
-    elif len(sys.argv) == 4:
-        k, iterations, file_name_1, file_name_2 = int(sys.argv[1]), DEFAULT_ITERATIONS_NUMBER, sys.argv[2], sys.argv[3]
-    else:
-        raise ValueError
-
-    if k < 0 or iterations < 0:
-        raise ValueError
-
-    return k, iterations, file_name_1, file_name_2
+from kmeans import parse_command_line
 
 
 def main():
