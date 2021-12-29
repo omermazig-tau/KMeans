@@ -91,6 +91,8 @@ def main():
         # Read the data
         filepath = os.path.join(os.path.dirname(os.path.realpath(__file__)), file_input)
         data_points = read_date_from_file(filepath=filepath)
+        if k > len(data_points):
+            raise ValueError("Number of clusters can't be higher than number of points")
         centroids = get_centroids_from_data_points(data_points, k, iterations)
         write_centroids_to_file(file_output, centroids)
 
