@@ -121,6 +121,11 @@ int main(int argc, char *argv[]) {
         }
         rewind(f);
 
+        if (rows < k) {
+            printf("An Error Has Occurred");
+            return 1;
+        }
+
         dataPoints = createMatrix(rows, cols);
         centroids = createMatrix(k, cols);
         newCentroids = createMatrix(k, cols);
