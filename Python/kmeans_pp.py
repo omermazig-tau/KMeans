@@ -53,12 +53,12 @@ def get_list_of_initial_centroids(k, data_points_1, data_points_2):
     centroids = data_points.iloc[np.random.choice(data_points.shape[0], 1)].copy()
 
     for i in range(1, k):
-        data_points['Distance' + str(i)] = (pow((data_points - centroids.iloc[i - 1]), 2)).sum(axis=1)
-        data_points['D'] = data_points.iloc[:, -i:].min(axis=1)
-        data_points['D'] = data_points['D'] / data_points['D'].sum()
-        next_centroid = np.random.choice(data_points.shape[0], 1, p=data_points['D'].to_numpy())
-        centroids = pd.merge(centroids, data_points.iloc[next_centroid, 0:cols], how='outer')
-        data_points.drop(columns=['D'], inplace=True)
+        data_points['Distance' + str(i)] = (pow((data_points - centroids.iloc[i - 1]), 2)).sum(axis=1) #adding new column to data_points of distance between each vector to i centroid
+        data_points['D'] = data_points.iloc[:, -i:].min(axis=1) #adding new column of the minimum distance squared
+        data_points['D'] = data_points['D'] / data_points['D'].sum() #calculating probability for each line
+        next_centroid = np.random.choice(data_points.shape[0], 1, p=data_points['D'].to_numpy()) #according to probabilties choosing new centroid
+        centroids = pd.merge(centroids, data_points.iloc[next_centroid, 0:cols], how='outer') #adding new centroid to data of centroids
+        data_points.drop(columns=['D'], inplace=True) # remove the column D on dataPoints
 
     return centroids.to_numpy().tolist()
 
