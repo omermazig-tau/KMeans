@@ -48,11 +48,7 @@ def parse_command_line():
     return k, iterations, file_input, file_output
 
 
-def get_centroids_from_data_points(data_points, k, iterations=DEFAULT_ITERATIONS_NUMBER):
-    if k == 0:
-        return []
-
-    centroids = data_points[:k]
+def get_centroids_from_data_points(data_points, centroids, iterations=DEFAULT_ITERATIONS_NUMBER):
     iteration_number = 0
     epsilon_condition = True
     while epsilon_condition and iteration_number < iterations:
@@ -93,7 +89,11 @@ def main():
         data_points = read_date_from_file(filepath=filepath)
         if k > len(data_points):
             raise ValueError("Number of clusters can't be higher than number of points")
-        centroids = get_centroids_from_data_points(data_points, k, iterations)
+        if k == 0:
+            centroids = []
+        else:
+            initial_centroids = data_points[:k]
+            centroids = get_centroids_from_data_points(data_points, initial_centroids, iterations)
         write_centroids_to_file(file_output, centroids)
 
     except:
