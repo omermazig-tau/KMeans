@@ -13,6 +13,9 @@ double **createMatrix(unsigned int rows, unsigned int cols);
 double getDistance(double * point1, double * point2, unsigned int dimNum);
 void copyArrayIntoArray(double ** arrayToChange, double ** arrayToCopy, unsigned int rows, unsigned int cols);
 void freeMatrixMemory(double ** matrixToFree, unsigned int rows);
+double **initialize_centroids(int rows, int cols, int k, FILE * f, double **dataPoints);
+double **get_new_centroids(int iterations, int rows, int cols, int k, int epsilon, double **dataPoints,
+                            double **centroids);
 
 double ** createMatrix(unsigned int rows, unsigned int cols) {
     unsigned int i;
@@ -60,6 +63,73 @@ void copyArrayIntoArray(double **arrayToChange, double **arrayToCopy, unsigned i
     }
 }
 
+double ** initialize_centroids(int rows, int cols, int k, FILE *f, double **dataPoints) {
+    int i;
+    int j;
+    double **centroids = createMatrix(k, cols);
+    for(i = 0; i < rows; i++) {
+        for(j = 0; j < cols; j++) {
+            fscanf(f, "%lf%*c", &dataPoints[i][j]);
+            if(i < k) {
+                centroids[i][j] = dataPoints[i][j];
+            }
+        }
+    }
+    return centroids;
+}
+
+double ** get_new_centroids(int iterations, int rows, int cols, int k, int epsilon, double **dataPoints,
+                            double **centroids) {
+    unsigned int i;
+    unsigned int j;
+    unsigned int m;
+    double minDistance;
+    double tempDistance;
+    unsigned int closestCentroid;
+
+    unsigned int epsilonCondition = TRUE;
+    unsigned int currentIteration = 0;
+    unsigned int *centroidsLengths = calloc(k, sizeof(int));
+    double **newCentroids = createMatrix(k, cols);
+
+    while (epsilonCondition == TRUE && currentIteration < iterations) {
+        epsilonCondition = FALSE;
+        for (i = 0; i < rows; i++) {
+            minDistance = getDistance(dataPoints[i], centroids[0], cols);
+            closestCentroid = 0;
+            for (j = 1; j < k; j++) {
+                tempDistance = getDistance(dataPoints[i], centroids[j], cols);
+                if (tempDistance < minDistance) {
+                    minDistance = tempDistance;
+                    closestCentroid = j;
+                }
+            }
+            centroidsLengths[closestCentroid]++;
+            for (m = 0; m < cols; m++) {
+                newCentroids[closestCentroid][m] += dataPoints[i][m];
+            }
+        }
+        for (i = 0; i < k; i++) {
+            for (j = 0; j < cols; j++) {
+                newCentroids[i][j] /= (double) centroidsLengths[i];
+            }
+            if (getDistance(centroids[i], newCentroids[i], cols) >= epsilon) {
+                epsilonCondition = TRUE;
+            }
+        }
+        copyArrayIntoArray(centroids, newCentroids, k, cols);
+        currentIteration++;
+        for (i = 0; i < k; i++) {
+            centroidsLengths[i] = 0;
+            for (j = 0; j < cols; j++) {
+                newCentroids[i][j] = 0.0;
+            }
+        }
+    }
+    free(centroidsLengths);
+    return newCentroids;
+}
+
 int main(int argc, char *argv[]) {
     unsigned int k;
     char *input_file;
@@ -67,22 +137,15 @@ int main(int argc, char *argv[]) {
     double **dataPoints;
     double **centroids;
     double **newCentroids;
-    unsigned int *centroidsLengths;
     unsigned int i;
     unsigned int j;
-    unsigned int m;
-    double minDistance;
-    double tempDistance;
-    unsigned int closestCentroid;
     FILE *f;
     double epsilon = 0.001;
     char *strK = NULL;
     char *strIter = NULL;
     unsigned int iterations = 200;
-    unsigned int currentIteration = 0;
     unsigned int cols = 0;
     unsigned int rows = 1;
-    unsigned int epsilonCondition = TRUE;
     char c = '0';
 
 
@@ -127,77 +190,31 @@ int main(int argc, char *argv[]) {
         }
 
         dataPoints = createMatrix(rows, cols);
-        centroids = createMatrix(k, cols);
-        newCentroids = createMatrix(k, cols);
-        centroidsLengths = calloc(k, sizeof(int));
-
-        for(i = 0; i < rows; i++) {
-            for(j = 0; j < cols; j++) {
-                fscanf(f, "%lf%*c", &dataPoints[i][j]);
-                if(i < k) {
-                    centroids[i][j] = dataPoints[i][j];
-                }
-            }
-        }
+        centroids = initialize_centroids(rows, cols, k, f, dataPoints);
 
         fclose(f);
-
-        if(k > 0) {
-            while (epsilonCondition == TRUE && currentIteration < iterations) {
-                epsilonCondition = FALSE;
-                for (i = 0; i < rows; i++) {
-                    minDistance = getDistance(dataPoints[i], centroids[0], cols);
-                    closestCentroid = 0;
-                    for (j = 1; j < k; j++) {
-                        tempDistance = getDistance(dataPoints[i], centroids[j], cols);
-                        if (tempDistance < minDistance) {
-                            minDistance = tempDistance;
-                            closestCentroid = j;
-                        }
-                    }
-                    centroidsLengths[closestCentroid]++;
-                    for (m = 0; m < cols; m++) {
-                        newCentroids[closestCentroid][m] += dataPoints[i][m];
-                    }
-                }
-                for (i = 0; i < k; i++) {
-                    for (j = 0; j < cols; j++) {
-                        newCentroids[i][j] /= (double) centroidsLengths[i];
-                    }
-                    if (getDistance(centroids[i], newCentroids[i], cols) >= epsilon) {
-                        epsilonCondition = TRUE;
-                    }
-                }
-                copyArrayIntoArray(centroids, newCentroids, k, cols);
-                currentIteration++;
-                for (i = 0; i < k; i++) {
-                    centroidsLengths[i] = 0;
-                    for (j = 0; j < cols; j++) {
-                        newCentroids[i][j] = 0.0;
-                    }
-                }
-            }
-        }
-        f = fopen(output_file, "w");
-        if(f) {
-            for (i = 0; i < k; i++) {
-                for (j = 0; j < cols - 1; j++) {
-                    fprintf(f, "%.4f%c", centroids[i][j], ',');
-                }
-                fprintf(f, "%.4f", centroids[i][cols - 1]);
-                fprintf(f, "%c", '\n');
-            }
-            fclose(f);
-        }
-        freeMatrixMemory(dataPoints, rows);
-        freeMatrixMemory(centroids, k);
-        freeMatrixMemory(newCentroids, k);
-        free(centroidsLengths);
-        return 0;
     }
     else {
         printf("An Error Has Occurred");
         return 1;
     }
+
+    if(k > 0) {
+        newCentroids = get_new_centroids(iterations, rows, cols, k, epsilon, dataPoints, centroids);
+    }
+    f = fopen(output_file, "w");
+    if(f) {
+        for (i = 0; i < k; i++) {
+            for (j = 0; j < cols - 1; j++) {
+                fprintf(f, "%.4f%c", centroids[i][j], ',');
+            }
+            fprintf(f, "%.4f", centroids[i][cols - 1]);
+            fprintf(f, "%c", '\n');
+        }
+        fclose(f);
+    }
+    freeMatrixMemory(dataPoints, rows);
+    freeMatrixMemory(centroids, k);
+    freeMatrixMemory(newCentroids, k);
     return 0;
 }
