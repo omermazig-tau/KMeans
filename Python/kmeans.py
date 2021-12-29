@@ -48,9 +48,10 @@ def parse_command_line():
     return k, iterations, file_input, file_output
 
 
-def get_centroids_from_data_points(data_points, centroids, iterations=DEFAULT_ITERATIONS_NUMBER):
+def get_centroids_from_data_points(data_points, initial_centroids, iterations=DEFAULT_ITERATIONS_NUMBER):
     iteration_number = 0
     epsilon_condition = True
+    centroids = initial_centroids
     while epsilon_condition and iteration_number < iterations:
         epsilon_condition = False
         bins = defaultdict(list)
