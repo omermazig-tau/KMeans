@@ -50,7 +50,7 @@ def get_list_of_initial_centroids(k, data_points_1, data_points_2):
     cols = data_points.shape[1]
 
     np.random.seed(0)
-    centroids = data_points.iloc[np.random.choice(data_points.shape[0], 1)].copy()
+    centroids = data_points.iloc[np.random.choice(data_points.shape[0], 1)]
 
     for i in range(1, k):
         data_points['Distance' + str(i)] = (pow((data_points - centroids.iloc[i - 1]), 2)).sum(axis=1) #adding new column to data_points of distance between each vector to i centroid
