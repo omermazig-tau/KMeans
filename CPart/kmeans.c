@@ -13,6 +13,7 @@ double **createMatrix(unsigned int rows, unsigned int cols);
 double getDistance(double * point1, double * point2, unsigned int dimNum);
 void copyArrayIntoArray(double ** arrayToChange, double ** arrayToCopy, unsigned int rows, unsigned int cols);
 void freeMatrixMemory(double ** matrixToFree, unsigned int rows);
+void fill_centroids(int rows, int cols, int k, FILE * f, double **dataPoints, double **centroids);
 
 double ** createMatrix(unsigned int rows, unsigned int cols) {
     unsigned int i;
@@ -56,6 +57,19 @@ void copyArrayIntoArray(double **arrayToChange, double **arrayToCopy, unsigned i
     for (i=0;i<rows;i++) {
         for (j = 0; j < cols; j++) {
             arrayToChange[i][j] = arrayToCopy[i][j];
+        }
+    }
+}
+
+void fill_centroids(int rows, int cols, int k, FILE *f, double **dataPoints, double **centroids) {
+    int i;
+    int j;
+    for(i = 0; i < rows; i++) {
+        for(j = 0; j < cols; j++) {
+            fscanf(f, "%lf%*c", &dataPoints[i][j]);
+            if(i < k) {
+                centroids[i][j] = dataPoints[i][j];
+            }
         }
     }
 }
@@ -131,14 +145,7 @@ int main(int argc, char *argv[]) {
         newCentroids = createMatrix(k, cols);
         centroidsLengths = calloc(k, sizeof(int));
 
-        for(i = 0; i < rows; i++) {
-            for(j = 0; j < cols; j++) {
-                fscanf(f, "%lf%*c", &dataPoints[i][j]);
-                if(i < k) {
-                    centroids[i][j] = dataPoints[i][j];
-                }
-            }
-        }
+        fill_centroids(rows, cols, k, f, dataPoints, centroids);
 
         fclose(f);
 
