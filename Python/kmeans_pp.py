@@ -23,8 +23,7 @@ def main():
             raise ValueError("Number of clusters can't be higher than number of points")
 
         list_index, list_centroids = get_list_of_initial_centroids(k, data_points_1, data_points_2)
-        print(list_index)
-        print(list_centroids)
+        print_output(list_centroids, list_index)  # TODO list_centroids should be the updated centroids
 
     except:
         print("An Error Has Occurred")
@@ -43,13 +42,18 @@ def get_list_of_initial_centroids(k, data_points_1, data_points_2):
             axis=1)  # adding new column to data_points of distance between each vector to i centroid
         data_points['D'] = data_points.iloc[:, -i:].min(axis=1)  # adding new column of the minimum distance squared
         data_points['D'] = data_points['D'] / data_points['D'].sum()  # calculating probability for each line
-        next_centroid = np.random.choice(data_points.shape[0], 1, p=data_points[
-            'D'].to_numpy())  # according to probabilities choosing new centroid
+        next_centroid = np.random.choice(data_points.shape[0], 1, p=data_points['D'].to_numpy())  # according to probabilities choosing new centroid
         centroids = pd.merge(centroids, data_points.iloc[next_centroid, 0:cols],
                              how='outer')  # adding new centroid to data of centroids
         data_points.drop(columns=['D'], inplace=True)  # remove the column D on dataPoints
 
     return centroids[0].to_numpy().tolist(), centroids.drop(columns=[0], axis=1).to_numpy().tolist()
+
+
+def print_output(list_centroids, list_index):
+    print(*[int(i) for i in list_index], sep=",")
+    for centroid in list_centroids:
+        print(*[format(i, ".4f") for i in centroid], sep=",")
 
 
 if __name__ == '__main__':
