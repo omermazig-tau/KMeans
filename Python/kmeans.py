@@ -5,7 +5,7 @@ from collections import defaultdict
 from typing import List, Tuple
 
 DEFAULT_ITERATIONS_NUMBER = 200
-EPSILON = 0.001
+DEFAULT_EPSILON = 0.001
 
 
 def read_date_from_file(filepath: str) -> List[Tuple[float]]:
@@ -48,7 +48,8 @@ def parse_command_line():
     return k, iterations, file_input, file_output
 
 
-def get_centroids_from_data_points(data_points, initial_centroids, iterations=DEFAULT_ITERATIONS_NUMBER):
+def get_centroids_from_data_points(data_points, initial_centroids,
+                                   iterations=DEFAULT_ITERATIONS_NUMBER, epsilon=DEFAULT_EPSILON):
     iteration_number = 0
     epsilon_condition = True
     centroids = initial_centroids
@@ -69,7 +70,7 @@ def get_centroids_from_data_points(data_points, initial_centroids, iterations=DE
             centroid = centroids[i]
             new_centroid = new_centroids[i]
             distance_between_centroids = math.sqrt(sum([(x0 - x1) ** 2 for x0, x1 in zip(centroid, new_centroid)]))
-            if distance_between_centroids >= EPSILON:
+            if distance_between_centroids >= epsilon:
                 epsilon_condition = True
         centroids = new_centroids
         iteration_number += 1
