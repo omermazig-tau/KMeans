@@ -35,7 +35,10 @@ def _get_centroids_from_python(data_points, initial_centroids, iterations, k, ep
     return get_centroids_from_data_points(data_points, initial_centroids, iterations, epsilon)
 
 
-@pytest.mark.parametrize("get_centroids_callback", [_get_centroids_from_c, _get_centroids_from_python])
+@pytest.mark.parametrize("get_centroids_callback", [
+    _get_centroids_from_c,
+    _get_centroids_from_python
+])
 @pytest.mark.parametrize("i,k,iterations", test_scenarios)
 def test_sanity(k, iterations, i, get_centroids_callback):
     epsilon = DEFAULT_EPSILON
