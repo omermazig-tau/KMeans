@@ -29,7 +29,7 @@ double getDistance(double * point1, double * point2, unsigned int dimNum) {
     unsigned int i;
     double sum = 0;
     for(i = 0; i < dimNum; i++) {
-        sum += pow(point1[i] - point2[i], 2);
+        sum += (point1[i] - point2[i])*(point1[i] - point2[i]);
     }
     return sqrt(sum);
 }
