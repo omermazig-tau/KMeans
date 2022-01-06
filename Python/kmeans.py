@@ -98,9 +98,9 @@ def main():
             centroids = get_centroids_from_data_points(data_points, initial_centroids, iterations)
         write_centroids_to_file(file_output, centroids)
 
-    except:
+    except Exception as e:
         print("An Error Has Occurred")
-        return
+        raise e  # TODO - replace this to return once we're done
 
 
 def write_centroids_to_file(file_output, centroids):
