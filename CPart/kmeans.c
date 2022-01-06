@@ -14,7 +14,7 @@ double getDistance(double * point1, double * point2, unsigned int dimNum);
 void copyArrayIntoArray(double ** arrayToChange, double ** arrayToCopy, unsigned int rows, unsigned int cols);
 void freeMatrixMemory(double ** matrixToFree, unsigned int rows);
 double **initialize_centroids(int rows, int cols, int k, FILE * f, double **dataPoints);
-static double **get_new_centroids(unsigned int iterations, unsigned int rows, unsigned int cols, unsigned int k, double epsilon, double **dataPoints,double **centroids);
+static void get_new_centroids(unsigned int iterations, unsigned int rows, unsigned int cols, unsigned int k, double epsilon, double **dataPoints,double **centroids);
 
 double ** createMatrix(unsigned int rows, unsigned int cols) {
     unsigned int i;
@@ -80,7 +80,7 @@ double ** initialize_centroids(int rows, int cols, int k, FILE *f, double **data
     return centroids;
 }
 
-static double ** get_new_centroids(unsigned int iterations, unsigned int rows, unsigned int cols, unsigned int k, double epsilon, double **dataPoints,
+void get_new_centroids(unsigned int iterations, unsigned int rows, unsigned int cols, unsigned int k, double epsilon, double **dataPoints,
                             double **centroids) {
     unsigned int i;
     unsigned int j;
@@ -129,7 +129,7 @@ static double ** get_new_centroids(unsigned int iterations, unsigned int rows, u
         }
     }
     free(centroidsLengths);
-    return newCentroids;
+    freeMatrixMemory(newCentroids, k);
 }
 
 int main(int argc, char *argv[]) {
