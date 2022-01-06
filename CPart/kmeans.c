@@ -18,9 +18,9 @@ static double **get_new_centroids(unsigned int iterations, unsigned int rows, un
 
 double ** createMatrix(unsigned int rows, unsigned int cols) {
     unsigned int i;
-    double **array = (double **) malloc(rows * sizeof(double  *));
+    double **array = (double **) malloc(rows * sizeof(double *));
     for(i = 0; i < rows; i++) {
-        array[i] = (double *) malloc(cols * sizeof(double));
+        array[i] = (double *) malloc(cols * sizeof(*(array[i])));
     }
     return array;
 }
