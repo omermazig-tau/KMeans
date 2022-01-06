@@ -6,8 +6,6 @@ import numpy as np
 import pandas as pd
 import os
 
-from Python.kmeans import get_centroids_from_data_points
-
 import kmeans_c_api
 
 DEFAULT_ITERATIONS_NUMBER = 300
