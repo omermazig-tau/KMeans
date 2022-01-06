@@ -3,7 +3,7 @@
 #include "kmeans.c"
 
 
-static PyObject* get_new_centroids_api(PyObject *self, PyObject *args)
+static PyObject* fit(PyObject *self, PyObject *args)
 {
     unsigned int iterations;
     unsigned int rows;
@@ -58,20 +58,20 @@ static PyObject* get_new_centroids_api(PyObject *self, PyObject *args)
 }
 
 static PyMethodDef _methods[] = {
-    {"get_new_centroids_api", (PyCFunction)get_new_centroids_api, METH_VARARGS, PyDoc_STR("C Api to calculate centroids")},
+    {"fit", (PyCFunction)fit, METH_VARARGS, PyDoc_STR("C Api to calculate centroids")},
     {NULL, NULL, 0, NULL}   /* sentinel */
 };
 
 static struct PyModuleDef _moduledef = {
     PyModuleDef_HEAD_INIT,
-    "kmeans_c_api",
+    "mykmeanssp",
     NULL,
     -1,
     _methods
 };
 
 PyMODINIT_FUNC
-PyInit_kmeans_c_api(void)
+PyInit_mykmeanssp(void)
 {
     return PyModule_Create(&_moduledef);
 }

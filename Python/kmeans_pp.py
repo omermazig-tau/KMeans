@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import os
 
-import kmeans_c_api
+import mykmeanssp
 
 DEFAULT_ITERATIONS_NUMBER = 300
 
@@ -32,7 +32,7 @@ def _get_centroids_from_c(data_points, initial_centroids, iterations, k, epsilon
     cols = len(data_points[0])
     flatten_initial_centroids = tuple(itertools.chain.from_iterable(initial_centroids))
     flatten_data_points = tuple(itertools.chain.from_iterable(data_points))
-    flatten_centroids = kmeans_c_api.get_new_centroids_api([iterations, rows, cols, k, epsilon,
+    flatten_centroids = mykmeanssp.fit([iterations, rows, cols, k, epsilon,
                                                             flatten_initial_centroids, flatten_data_points])
 
     return get_matrix_from_flattened_list(k, cols, flatten_centroids)

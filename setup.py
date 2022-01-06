@@ -6,7 +6,7 @@ In addition, a minimalist setup is shown.
 """
 
 
-setup(name='kmeans_c_api',
+setup(name='mykmeanssp',
       version='1.0',
-      description='kmeans_c_api for sp class',
-      ext_modules=[Extension('kmeans_c_api', sources=['CPart/kmeansApi.c'])])
+      description='kmeans c api for sp class',
+      ext_modules=[Extension('mykmeanssp', sources=['CPart/kmeansApi.c'])])
