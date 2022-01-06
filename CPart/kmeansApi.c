@@ -47,7 +47,7 @@ static PyObject* get_new_centroids_api(PyObject *self, PyObject *args)
     PyObject* newFlattenCentroids = PyList_New(k*cols);
     for(i = 0; i < k; i++) {
         for(j = 0; j < cols; j++) {
-            PyList_SetItem(newFlattenCentroids, j + i*cols, Py_BuildValue("d", centroids[i][j]));
+            PyList_SetItem(newFlattenCentroids, j + i*cols, PyFloat_FromDouble(centroids[i][j]));
         }
     }
 
