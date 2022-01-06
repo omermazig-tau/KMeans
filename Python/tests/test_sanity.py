@@ -1,6 +1,7 @@
 import itertools
 import math
 import os
+from typing import List
 
 import pytest
 
@@ -19,14 +20,25 @@ def compare_data_points(data_point, other_data_point, epsilon):
         assert math.isclose(a, b, abs_tol=epsilon)
 
 
+def get_matrix_from_flattened_list(k, cols, flatten_centroids: List[float]):
+    matrix = []
+    for i in range(k):
+        temp = []
+        for j in range(cols):
+            temp.append(flatten_centroids[j + i * cols])
+        matrix.append(temp)
+    return matrix
+
+
 def _get_centroids_from_c(data_points, initial_centroids, iterations, k, epsilon):
     rows = len(data_points)
     cols = len(data_points[0])
     flatten_initial_centroids = tuple(itertools.chain.from_iterable(initial_centroids))
     flatten_data_points = tuple(itertools.chain.from_iterable(data_points))
-    b = kmeans_c_api.get_new_centroids_api([iterations, rows, cols, k, epsilon, flatten_initial_centroids,
-                                          flatten_data_points])
-    return b
+    flatten_centroids = kmeans_c_api.get_new_centroids_api([iterations, rows, cols, k, epsilon,
+                                                            flatten_initial_centroids, flatten_data_points])
+
+    return get_matrix_from_flattened_list(k, cols, flatten_centroids)
 
 
 # `k` param is necessary for callback compatibility
