@@ -9,4 +9,4 @@ In addition, a minimalist setup is shown.
 setup(name='kmeans_c_api',
       version='1.0',
       description='kmeans_c_api for sp class',
-      ext_modules=[Extension('kmeans_c_api', sources=['cPart/kmeansApi.c'])])
+      ext_modules=[Extension('kmeans_c_api', sources=['CPart/kmeansApi.c'])])
