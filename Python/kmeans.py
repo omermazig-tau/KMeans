@@ -81,14 +81,15 @@ def get_centroids_from_data_points(data_points, initial_centroids,
 def main():
     try:
         try:
-            k, iterations, file_input, file_output = parse_command_line()
+            k, iterations, file_input_name, file_output_name = parse_command_line()
         except ValueError:
             print("Invalid Input!")
             return
 
         # Read the data
-        filepath = os.path.join(os.path.dirname(os.path.realpath(__file__)), file_input)
-        data_points = read_date_from_file(filepath=filepath)
+        input_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), file_input_name)
+        output_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), file_output_name)
+        data_points = read_date_from_file(filepath=input_path)
         if k > len(data_points):
             raise ValueError("Number of clusters can't be higher than number of points")
         if k == 0:
@@ -96,7 +97,7 @@ def main():
         else:
             initial_centroids = data_points[:k]
             centroids = get_centroids_from_data_points(data_points, initial_centroids, iterations)
-        write_centroids_to_file(file_output, centroids)
+        write_centroids_to_file(output_path, centroids)
 
     except Exception as e:
         print("An Error Has Occurred")
