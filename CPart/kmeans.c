@@ -128,6 +128,7 @@ static double ** get_new_centroids(unsigned int iterations, unsigned int rows, u
             }
         }
     }
+    free(centroidsLengths);
     return newCentroids;
 }
 
