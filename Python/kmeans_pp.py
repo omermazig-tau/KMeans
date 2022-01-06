@@ -1,10 +1,16 @@
+import itertools
 import sys
+from typing import List
 
 import numpy as np
 import pandas as pd
 import os
 
-from kmeans import DEFAULT_ITERATIONS_NUMBER, get_centroids_from_data_points
+from Python.kmeans import get_centroids_from_data_points
+
+import kmeans_c_api
+
+DEFAULT_ITERATIONS_NUMBER = 300
 
 
 def parse_command_line():
@@ -21,6 +27,27 @@ def parse_command_line():
         raise ValueError
 
     return k, iterations, epsilon, file_input_1, file_input_2
+
+
+def _get_centroids_from_c(data_points, initial_centroids, iterations, k, epsilon):
+    rows = len(data_points)
+    cols = len(data_points[0])
+    flatten_initial_centroids = tuple(itertools.chain.from_iterable(initial_centroids))
+    flatten_data_points = tuple(itertools.chain.from_iterable(data_points))
+    flatten_centroids = kmeans_c_api.get_new_centroids_api([iterations, rows, cols, k, epsilon,
+                                                            flatten_initial_centroids, flatten_data_points])
+
+    return get_matrix_from_flattened_list(k, cols, flatten_centroids)
+
+
+def get_matrix_from_flattened_list(k, cols, flatten_centroids: List[float]):
+    matrix = []
+    for i in range(k):
+        temp = []
+        for j in range(cols):
+            temp.append(flatten_centroids[j + i * cols])
+        matrix.append(temp)
+    return matrix
 
 
 def main():
@@ -47,7 +74,7 @@ def main():
         initial_centroids_indexes, initial_centroids = get_list_of_initial_centroids(k, data_points.copy())
         data_points = data_points.to_numpy().tolist()
         # TODO - This should be a call to the function from C. Will add later.
-        centroids = get_centroids_from_data_points(data_points, initial_centroids, iterations, epsilon)
+        centroids = _get_centroids_from_c(data_points, initial_centroids, iterations, k, epsilon)
         print_output(centroids, initial_centroids_indexes)
 
     except Exception as e:
@@ -83,7 +110,7 @@ def get_list_of_initial_centroids(k, data_points):
 def print_output(list_centroids, list_index):
     print(*[int(i) for i in list_index], sep=",")
     for centroid in list_centroids:
-        print(*[format(i, ".4f") for i in centroid], sep=",")
+        print(*[f"{i:.4f}".rstrip('0') for i in centroid], sep=",")
 
 
 if __name__ == '__main__':
