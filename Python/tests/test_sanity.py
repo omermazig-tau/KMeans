@@ -30,11 +30,13 @@ def _get_centroids_from_python(data_points, initial_centroids, iterations, k, ep
 def test_sanity(k, iterations, i, get_centroids_callback):
     epsilon = DEFAULT_EPSILON
 
-    filepath = os.path.join(os.path.dirname(os.path.realpath(__file__)), f'input_{i}.txt')
-    data_points = read_date_from_file(filepath)
+    base_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'kmeans_files')
+    input_filepath = os.path.join(base_folder, f'input_{i}.txt')
+    data_points = read_date_from_file(input_filepath)
     initial_centroids = data_points[:k]
     centroids = get_centroids_callback(data_points, initial_centroids, iterations, k, epsilon)
-    expected_centroids = read_date_from_file(f'output_{i}.txt')
+    output_filepath = os.path.join(base_folder, f'output_{i}.txt')
+    expected_centroids = read_date_from_file(output_filepath)
     assert len(centroids) == len(expected_centroids)
     for i, centroid in enumerate(centroids):
         compare_data_points(centroid, expected_centroids[i], epsilon)
