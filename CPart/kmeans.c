@@ -211,5 +211,7 @@ int main(int argc, char *argv[]) {
         }
         fclose(f);
     }
+    freeMatrixMemory(dataPoints, rows);
+    freeMatrixMemory(centroids, k);
     return 0;
 }
