@@ -32,9 +32,9 @@ def test_sanity_original_examples(k, iterations, i, get_centroids_callback):
     if iterations is None:
         iterations = DEFAULT_ITERATIONS_NUMBER
 
-    base_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'kmeans_files')
-    input_filepath = os.path.join(base_folder, f'input_{i}_orig.txt')
-    output_filepath = os.path.join(base_folder, f'output_{i}_orig.txt')
+    base_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)), "kmeans_files")
+    input_filepath = os.path.join(base_folder, f"input_{i}_orig.txt")
+    output_filepath = os.path.join(base_folder, f"output_{i}_orig.txt")
     get_and_assert_new_centroids(k, iterations, epsilon, get_centroids_callback, input_filepath, output_filepath)
 
 
@@ -46,9 +46,9 @@ def test_sanity_original_examples(k, iterations, i, get_centroids_callback):
 def test_sanity(k, iterations, i, get_centroids_callback):
     epsilon = DEFAULT_EPSILON
 
-    base_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'kmeans_files')
-    input_filepath = os.path.join(base_folder, f'input_{i}.txt')
-    output_filepath = os.path.join(base_folder, f'output_{i}.txt')
+    base_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)), "kmeans_files")
+    input_filepath = os.path.join(base_folder, f"input_{i}.txt")
+    output_filepath = os.path.join(base_folder, f"output_{i}.txt")
     get_and_assert_new_centroids(k, iterations, epsilon, get_centroids_callback, input_filepath, output_filepath)
 
 
