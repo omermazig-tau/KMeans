@@ -36,11 +36,13 @@ void freeMatrixMemory(double ** matrixToFree, unsigned int rows){
 double getDistance(double * point1, double * point2, unsigned int dimNum) {
     unsigned int i;
     double sum;
+    double distance;
     sum = 0;
     for(i = 0; i < dimNum; i++) {
         sum += (point1[i] - point2[i])*(point1[i] - point2[i]);
     }
-    return sqrt(sum);
+    distance = sqrt(sum);
+    return distance;
 }
 
 int isNumber(char str[]) {
