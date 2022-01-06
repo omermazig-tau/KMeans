@@ -25,9 +25,18 @@ double ** createMatrix(unsigned int rows, unsigned int cols) {
     return array;
 }
 
+void freeMatrixMemory(double ** matrixToFree, unsigned int rows){
+    unsigned int i;
+    for (i = 0; i < rows; i++) {
+        free(matrixToFree[i]);
+    }
+    free(matrixToFree);
+}
+
 double getDistance(double * point1, double * point2, unsigned int dimNum) {
     unsigned int i;
-    double sum = 0;
+    double sum;
+    sum = 0;
     for(i = 0; i < dimNum; i++) {
         sum += (point1[i] - point2[i])*(point1[i] - point2[i]);
     }
@@ -42,14 +51,6 @@ int isNumber(char str[]) {
         }
     }
     return TRUE;
-}
-
-void freeMatrixMemory(double ** matrixToFree, unsigned int rows){
-    unsigned int i;
-    for (i = 0; i < rows; i++) {
-        free(matrixToFree[i]);
-    }
-    free(matrixToFree);
 }
 
 void copyArrayIntoArray(double **arrayToChange, double **arrayToCopy, unsigned int rows, unsigned int cols) {
