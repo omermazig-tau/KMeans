@@ -1,13 +1,32 @@
+import sys
+
 import numpy as np
 import pandas as pd
 import os
-from kmeans import parse_command_line
+
+from Python.kmeans import DEFAULT_ITERATIONS_NUMBER
+
+
+def parse_command_line():
+    if len(sys.argv) == 6:
+        k, iterations, epsilon, file_input_1, file_input_2 = int(sys.argv[1]), int(sys.argv[2]), float(sys.argv[3]), \
+                                                             sys.argv[4], sys.argv[5]
+    elif len(sys.argv) == 5:
+        k, iterations, epsilon, file_input_1, file_input_2 = int(sys.argv[1]), DEFAULT_ITERATIONS_NUMBER, \
+                                                             float(sys.argv[2]), sys.argv[3], sys.argv[4]
+    else:
+        raise ValueError
+
+    if k < 0 or iterations < 0 or epsilon < 0:
+        raise ValueError
+
+    return k, iterations, epsilon, file_input_1, file_input_2
 
 
 def main():
     try:
         try:
-            k, iterations, file_name_1, file_name_2 = parse_command_line()
+            k, iterations, epsilon, file_name_1, file_name_2 = parse_command_line()
         except ValueError:
             print("Invalid Input!")
             return
