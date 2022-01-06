@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import os
 
-from kmeans import DEFAULT_ITERATIONS_NUMBER
+from kmeans import DEFAULT_ITERATIONS_NUMBER, get_centroids_from_data_points
 
 
 def parse_command_line():
@@ -44,8 +44,11 @@ def main():
             raise ValueError("Number of clusters can't be higher than number of points")
 
         data_points = pd.merge(data_points_1, data_points_2, on='INDEX', how='inner')
-        initial_centroids_indexes, initial_centroids = get_list_of_initial_centroids(k, data_points)
-        print_output(initial_centroids_indexes, initial_centroids_indexes)  # TODO centroids should be the updated centroids
+        initial_centroids_indexes, initial_centroids = get_list_of_initial_centroids(k, data_points.copy())
+        data_points = data_points.to_numpy().tolist()
+        # TODO - This should be a call to the function from C. Will add later.
+        centroids = get_centroids_from_data_points(data_points, initial_centroids, iterations, epsilon)
+        print_output(centroids, initial_centroids_indexes)
 
     except Exception as e:
         print("An Error Has Occurred")
