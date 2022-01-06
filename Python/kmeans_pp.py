@@ -43,36 +43,36 @@ def main():
         if k > len(data_points_1) + len(data_points_2):
             raise ValueError("Number of clusters can't be higher than number of points")
 
-        initial_centroids_indexes, centroids = get_list_of_initial_centroids(k, data_points_1, data_points_2)
-        print_output(centroids, initial_centroids_indexes)  # TODO centroids should be the updated centroids
+        data_points = pd.merge(data_points_1, data_points_2, on='INDEX', how='inner')
+        initial_centroids_indexes, initial_centroids = get_list_of_initial_centroids(k, data_points)
+        print_output(initial_centroids_indexes, initial_centroids_indexes)  # TODO centroids should be the updated centroids
 
-    except:
+    except Exception as e:
         print("An Error Has Occurred")
-        return
+        raise e # TODO - replace this to return once we're done
 
 
-def get_list_of_initial_centroids(k, data_points_1, data_points_2):
+def get_list_of_initial_centroids(k, data_points):
     index_initial_centroids = list()
-    points = pd.merge(data_points_1, data_points_2, on='INDEX', how='inner')
-    points.sort_index(inplace=True)
-    cols = points.shape[1]
+    data_points.sort_index(inplace=True)
+    cols = data_points.shape[1]
 
     np.random.seed(0)
-    next_centroid = np.random.choice(points.shape[0], 1)
+    next_centroid = np.random.choice(data_points.shape[0], 1)
     index_initial_centroids.append(next_centroid)
 
-    centroids = points.iloc[next_centroid]
+    centroids = data_points.iloc[next_centroid]
 
     for i in range(1, k):
-        points['Distance' + str(i)] = (pow((points - centroids.iloc[i - 1]), 2)).sum(
+        data_points['Distance' + str(i)] = (pow((data_points - centroids.iloc[i - 1]), 2)).sum(
             axis=1)  # adding new column to data_points of distance between each vector to i centroid
-        points['D'] = points.iloc[:, -i:].min(axis=1)  # adding new column of the minimum distance squared
-        points['D'] = points['D'] / points['D'].sum()  # calculating probability for each line
-        next_centroid = np.random.choice(points.shape[0], 1, p=np.array(points['D'].values.tolist()))  # according to probabilities choosing new centroid
+        data_points['D'] = data_points.iloc[:, -i:].min(axis=1)  # adding new column of the minimum distance squared
+        data_points['D'] = data_points['D'] / data_points['D'].sum()  # calculating probability for each line
+        next_centroid = np.random.choice(data_points.shape[0], 1, p=np.array(data_points['D'].values.tolist()))  # according to probabilities choosing new centroid
         index_initial_centroids.append(next_centroid)
-        centroids = pd.merge(centroids, points.iloc[next_centroid, 0:cols],
+        centroids = pd.merge(centroids, data_points.iloc[next_centroid, 0:cols],
                              how='outer')  # adding new centroid to data of centroids
-        points.drop(columns=['D'], inplace=True)  # remove the column D on dataPoints
+        data_points.drop(columns=['D'], inplace=True)  # remove the column D on dataPoints
 
     return index_initial_centroids, centroids.values.tolist()
 
