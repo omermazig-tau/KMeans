@@ -5,24 +5,24 @@
 
 static PyObject* get_new_centroids_api(PyObject *self, PyObject *args)
 {
-    long iterations;
-    int rows;
-    int cols;
-    int k;
+    unsigned int iterations;
+    unsigned int rows;
+    unsigned int cols;
+    unsigned int k;
     double epsilon;
     
-    int i;
-    int j;
+    unsigned int i;
+    unsigned int j;
 
     PyObject* params_list;
 
     if (!PyArg_ParseTuple(args, "O", &params_list))
         return NULL;
 
-    iterations = PyLong_AsLong(PyList_GetItem(params_list, 0));
-    rows = PyLong_AsLong(PyList_GetItem(params_list, 1));
-    cols = PyLong_AsLong(PyList_GetItem(params_list, 2));
-    k = PyLong_AsLong(PyList_GetItem(params_list, 3));
+    iterations = (unsigned int) PyLong_AsLong(PyList_GetItem(params_list, 0));
+    rows = (unsigned int) PyLong_AsLong(PyList_GetItem(params_list, 1));
+    cols = (unsigned int) PyLong_AsLong(PyList_GetItem(params_list, 2));
+    k = (unsigned int) PyLong_AsLong(PyList_GetItem(params_list, 3));
     epsilon = PyFloat_AsDouble(PyList_GetItem(params_list, 4));
     PyObject* flattenCentroids = PyList_GetItem(params_list, 5);
     PyObject* flattenDataPoints = PyList_GetItem(params_list, 6);
@@ -44,19 +44,17 @@ static PyObject* get_new_centroids_api(PyObject *self, PyObject *args)
 
     get_new_centroids(iterations, rows, cols, k, epsilon, dataPoints, centroids);
 
-    PyObject* my_list = PyList_New(0);
+    PyObject* newFlattenCentroids = PyList_New(k*cols);
     for(i = 0; i < k; i++) {
-        PyObject* temp_list = PyTuple_New(cols);
         for(j = 0; j < cols; j++) {
-            PyTuple_SetItem(temp_list, j, Py_BuildValue("d", centroids[i][j]));
+            PyList_SetItem(newFlattenCentroids, j + i*cols, Py_BuildValue("d", centroids[i][j]));
         }
-        PyList_Append(my_list, temp_list);
     }
 
     freeMatrixMemory(centroids, k);
     freeMatrixMemory(dataPoints, rows);
 
-    return my_list;
+    return newFlattenCentroids;
 }
 
 static PyMethodDef _methods[] = {
