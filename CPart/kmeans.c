@@ -135,7 +135,6 @@ int main(int argc, char *argv[]) {
     char *output_file;
     double **dataPoints;
     double **centroids;
-    double **newCentroids;
     unsigned int i;
     unsigned int j;
     FILE *f;
@@ -199,7 +198,7 @@ int main(int argc, char *argv[]) {
     }
 
     if(k > 0) {
-        newCentroids = get_new_centroids(iterations, rows, cols, k, epsilon, dataPoints, centroids);
+        get_new_centroids(iterations, rows, cols, k, epsilon, dataPoints, centroids);
     }
     f = fopen(output_file, "w");
     if(f) {
@@ -214,6 +213,5 @@ int main(int argc, char *argv[]) {
     }
     freeMatrixMemory(dataPoints, rows);
     freeMatrixMemory(centroids, k);
-    freeMatrixMemory(newCentroids, k);
     return 0;
 }
