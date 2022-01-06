@@ -43,8 +43,8 @@ def main():
         if k > len(data_points_1) + len(data_points_2):
             raise ValueError("Number of clusters can't be higher than number of points")
 
-        list_index, list_centroids = get_list_of_initial_centroids(k, data_points_1, data_points_2)
-        print_output(list_centroids, list_index)  # TODO list_centroids should be the updated centroids
+        initial_centroids_indexes, centroids = get_list_of_initial_centroids(k, data_points_1, data_points_2)
+        print_output(centroids, initial_centroids_indexes)  # TODO centroids should be the updated centroids
 
     except:
         print("An Error Has Occurred")
@@ -52,7 +52,7 @@ def main():
 
 
 def get_list_of_initial_centroids(k, data_points_1, data_points_2):
-    index_initial_centroids = list();
+    index_initial_centroids = list()
     points = pd.merge(data_points_1, data_points_2, on='INDEX', how='inner')
     points.sort_index(inplace=True)
     cols = points.shape[1]
