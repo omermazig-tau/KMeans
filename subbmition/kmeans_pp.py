@@ -33,7 +33,7 @@ def _get_centroids_from_c(data_points, initial_centroids, iterations, k, epsilon
     flatten_initial_centroids = tuple(itertools.chain.from_iterable(initial_centroids))
     flatten_data_points = tuple(itertools.chain.from_iterable(data_points))
     flatten_centroids = mykmeanssp.fit([iterations, rows, cols, k, epsilon,
-                                                            flatten_initial_centroids, flatten_data_points])
+                                        flatten_initial_centroids, flatten_data_points])
 
     return get_matrix_from_flattened_list(k, cols, flatten_centroids)
 
@@ -59,10 +59,12 @@ def apply_kmeans_pp(k, iterations, epsilon, filepath1, filepath2):
 
     data_points = pd.merge(data_points_1, data_points_2, on='INDEX', how='inner')
     initial_centroids_indexes, initial_centroids = get_list_of_initial_centroids(k, data_points.copy())
-    data_points = data_points.to_numpy().tolist()
-    # TODO - This should be a call to the function from C. Will add later.
-    centroids = _get_centroids_from_c(data_points, initial_centroids, iterations, k, epsilon)
-    return centroids, initial_centroids_indexes
+    if iterations == 0:
+        return initial_centroids, initial_centroids_indexes
+    else:
+        data_points = data_points.to_numpy().tolist()
+        centroids = _get_centroids_from_c(data_points, initial_centroids, iterations, k, epsilon)
+        return centroids, initial_centroids_indexes
 
 
 def main():
@@ -77,12 +79,14 @@ def main():
         filepath1 = os.path.realpath(file_name_1)
         filepath2 = os.path.realpath(file_name_2)
 
-        centroids, initial_centroids_indexes = apply_kmeans_pp(k, iterations, epsilon, filepath1, filepath2)
+        if k == 0:
+            centroids, initial_centroids_indexes = [], []
+        else:
+            centroids, initial_centroids_indexes = apply_kmeans_pp(k, iterations, epsilon, filepath1, filepath2)
         print_output(centroids, initial_centroids_indexes)
 
-    except Exception as e:
+    except:
         print("An Error Has Occurred")
-        raise e # TODO - replace this to return once we're done
 
 
 def get_list_of_initial_centroids(k, data_points):
