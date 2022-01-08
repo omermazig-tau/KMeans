@@ -85,9 +85,8 @@ def main():
             centroids, initial_centroids_indexes = apply_kmeans_pp(k, iterations, epsilon, filepath1, filepath2)
         print_output(centroids, initial_centroids_indexes)
 
-    except Exception as e:
+    except:
         print("An Error Has Occurred")
-        raise e  # TODO - replace this to return once we're done
 
 
 def get_list_of_initial_centroids(k, data_points):
