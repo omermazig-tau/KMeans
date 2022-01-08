@@ -33,7 +33,7 @@ def _get_centroids_from_c(data_points, initial_centroids, iterations, k, epsilon
     flatten_initial_centroids = tuple(itertools.chain.from_iterable(initial_centroids))
     flatten_data_points = tuple(itertools.chain.from_iterable(data_points))
     flatten_centroids = mykmeanssp.fit([iterations, rows, cols, k, epsilon,
-                                                            flatten_initial_centroids, flatten_data_points])
+                                        flatten_initial_centroids, flatten_data_points])
 
     return get_matrix_from_flattened_list(k, cols, flatten_centroids)
 
@@ -87,7 +87,7 @@ def main():
 
     except Exception as e:
         print("An Error Has Occurred")
-        raise e # TODO - replace this to return once we're done
+        raise e  # TODO - replace this to return once we're done
 
 
 def get_list_of_initial_centroids(k, data_points):
@@ -106,7 +106,8 @@ def get_list_of_initial_centroids(k, data_points):
             axis=1)  # adding new column to data_points of distance between each vector to i centroid
         data_points['D'] = data_points.iloc[:, -i:].min(axis=1)  # adding new column of the minimum distance squared
         data_points['D'] = data_points['D'] / data_points['D'].sum()  # calculating probability for each line
-        next_centroid = np.random.choice(data_points.shape[0], 1, p=np.array(data_points['D'].values.tolist()))  # according to probabilities choosing new centroid
+        next_centroid = np.random.choice(data_points.shape[0], 1, p=np.array(
+            data_points['D'].values.tolist()))  # according to probabilities choosing new centroid
         index_initial_centroids.append(next_centroid)
         centroids = pd.merge(centroids, data_points.iloc[next_centroid, 0:cols],
                              how='outer')  # adding new centroid to data of centroids
