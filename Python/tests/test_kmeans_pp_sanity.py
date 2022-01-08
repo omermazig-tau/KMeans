@@ -37,8 +37,10 @@ def get_and_assert_new_centroids(centroids, initial_centroids_indexes, output_pa
     expected_indexes = expected_output[0]
     expected_centroids = expected_output[1:]
 
-    assert initial_centroids_indexes == expected_indexes
+    for x, y in zip(initial_centroids_indexes, expected_indexes):
+        assert x == y
 
     assert len(centroids) == len(expected_centroids)
     for i, centroid in enumerate(centroids):
-        compare_data_points(centroid, expected_centroids[i], epsilon)
+        expected_centroid = expected_centroids[i]
+        compare_data_points(centroid, expected_centroid, max(epsilon, 0.01))
