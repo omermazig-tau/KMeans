@@ -10,22 +10,14 @@ static PyObject* fit(PyObject *self, PyObject *args)
     unsigned int cols;
     unsigned int k;
     double epsilon;
+    PyObject* flattenCentroids;
+    PyObject* flattenDataPoints;
     
     unsigned int i;
     unsigned int j;
 
-    PyObject* params_list;
-
-    if (!PyArg_ParseTuple(args, "O", &params_list))
+    if (!PyArg_ParseTuple(args, "iiiidOO", &iterations, &rows, &cols, &k, &epsilon, &flattenCentroids, &flattenDataPoints))
         return NULL;
-
-    iterations = (unsigned int) PyLong_AsLong(PyList_GetItem(params_list, 0));
-    rows = (unsigned int) PyLong_AsLong(PyList_GetItem(params_list, 1));
-    cols = (unsigned int) PyLong_AsLong(PyList_GetItem(params_list, 2));
-    k = (unsigned int) PyLong_AsLong(PyList_GetItem(params_list, 3));
-    epsilon = PyFloat_AsDouble(PyList_GetItem(params_list, 4));
-    PyObject* flattenCentroids = PyList_GetItem(params_list, 5);
-    PyObject* flattenDataPoints = PyList_GetItem(params_list, 6);
 
     double **centroids = createMatrix(k, cols);
     double **dataPoints = createMatrix(rows, cols);
@@ -44,10 +36,13 @@ static PyObject* fit(PyObject *self, PyObject *args)
 
     get_new_centroids(iterations, rows, cols, k, epsilon, dataPoints, centroids);
 
-    PyObject* newFlattenCentroids = PyList_New(k*cols);
+    PyObject* newFlattenCentroids = PyTuple_New(k*cols);
+    if(newFlattenCentroids == NULL)
+        return NULL;
+
     for(i = 0; i < k; i++) {
         for(j = 0; j < cols; j++) {
-            PyList_SetItem(newFlattenCentroids, j + i*cols, PyFloat_FromDouble(centroids[i][j]));
+            PyTuple_SetItem(newFlattenCentroids, j + i*cols, PyFloat_FromDouble(centroids[i][j]));
         }
     }
 
