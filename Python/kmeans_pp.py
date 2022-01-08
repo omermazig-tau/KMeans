@@ -107,11 +107,11 @@ def get_list_of_initial_centroids(k, data_points):
                              how='outer')  # adding new centroid to data of centroids
         data_points.drop(columns=['D'], inplace=True)  # remove the column D on dataPoints
 
-    return index_initial_centroids, centroids.values.tolist()
+    return [array[0] for array in index_initial_centroids], centroids.values.tolist()
 
 
 def print_output(list_centroids, list_index):
-    print(*[int(i) for i in list_index], sep=",")
+    print(*[list_index], sep=",")
     for centroid in list_centroids:
         print(*[f"{i:.4f}".rstrip('0') for i in centroid], sep=",")
 
