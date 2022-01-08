@@ -48,6 +48,23 @@ def get_matrix_from_flattened_list(k, cols, flatten_centroids: List[float]):
     return matrix
 
 
+def apply_kmeans_pp(k, iterations, epsilon, filepath1, filepath2):
+    data_points_1 = pd.read_csv(filepath1, header=None, index_col=0)
+    data_points_1.index.names = ['INDEX']
+    data_points_2 = pd.read_csv(filepath2, header=None, index_col=0)
+    data_points_2.index.names = ['INDEX']
+
+    if k > len(data_points_1) + len(data_points_2):
+        raise ValueError("Number of clusters can't be higher than number of points")
+
+    data_points = pd.merge(data_points_1, data_points_2, on='INDEX', how='inner')
+    initial_centroids_indexes, initial_centroids = get_list_of_initial_centroids(k, data_points.copy())
+    data_points = data_points.to_numpy().tolist()
+    # TODO - This should be a call to the function from C. Will add later.
+    centroids = _get_centroids_from_c(data_points, initial_centroids, iterations, k, epsilon)
+    return centroids, initial_centroids_indexes
+
+
 def main():
     try:
         try:
@@ -60,19 +77,7 @@ def main():
         filepath1 = os.path.join(os.path.dirname(os.path.realpath(__file__)), file_name_1)
         filepath2 = os.path.join(os.path.dirname(os.path.realpath(__file__)), file_name_2)
 
-        data_points_1 = pd.read_csv(filepath1, header=None, index_col=0)
-        data_points_1.index.names = ['INDEX']
-        data_points_2 = pd.read_csv(filepath2, header=None, index_col=0)
-        data_points_2.index.names = ['INDEX']
-
-        if k > len(data_points_1) + len(data_points_2):
-            raise ValueError("Number of clusters can't be higher than number of points")
-
-        data_points = pd.merge(data_points_1, data_points_2, on='INDEX', how='inner')
-        initial_centroids_indexes, initial_centroids = get_list_of_initial_centroids(k, data_points.copy())
-        data_points = data_points.to_numpy().tolist()
-        # TODO - This should be a call to the function from C. Will add later.
-        centroids = _get_centroids_from_c(data_points, initial_centroids, iterations, k, epsilon)
+        centroids, initial_centroids_indexes = apply_kmeans_pp(k, iterations, epsilon, filepath1, filepath2)
         print_output(centroids, initial_centroids_indexes)
 
     except Exception as e:
