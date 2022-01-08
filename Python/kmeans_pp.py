@@ -74,8 +74,8 @@ def main():
             return
 
         # Read the data
-        filepath1 = os.path.join(os.path.dirname(os.path.realpath(__file__)), file_name_1)
-        filepath2 = os.path.join(os.path.dirname(os.path.realpath(__file__)), file_name_2)
+        filepath1 = os.path.realpath(file_name_1)
+        filepath2 = os.path.realpath(file_name_2)
 
         centroids, initial_centroids_indexes = apply_kmeans_pp(k, iterations, epsilon, filepath1, filepath2)
         print_output(centroids, initial_centroids_indexes)

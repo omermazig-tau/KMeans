@@ -87,8 +87,8 @@ def main():
             return
 
         # Read the data
-        input_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), file_input_name)
-        output_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), file_output_name)
+        input_path = os.path.realpath(file_input_name)
+        output_path = os.path.realpath(file_output_name)
         data_points = read_date_from_file(filepath=input_path)
         if k > len(data_points):
             raise ValueError("Number of clusters can't be higher than number of points")
