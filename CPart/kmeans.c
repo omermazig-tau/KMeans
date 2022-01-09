@@ -96,6 +96,14 @@ void get_new_centroids(unsigned int iterations, unsigned int rows, unsigned int 
 
     while (epsilonCondition == TRUE && currentIteration < iterations) {
         epsilonCondition = FALSE;
+
+        for (i = 0; i < k; i++) {
+            centroidsLengths[i] = 0;
+            for (j = 0; j < cols; j++) {
+                newCentroids[i][j] = 0.0;
+            }
+        }
+
         for (i = 0; i < rows; i++) {
             minDistance = getDistance(dataPoints[i], centroids[0], cols);
             closestCentroid = 0;
@@ -121,12 +129,6 @@ void get_new_centroids(unsigned int iterations, unsigned int rows, unsigned int 
         }
         copyArrayIntoArray(centroids, newCentroids, k, cols);
         currentIteration++;
-        for (i = 0; i < k; i++) {
-            centroidsLengths[i] = 0;
-            for (j = 0; j < cols; j++) {
-                newCentroids[i][j] = 0.0;
-            }
-        }
     }
     free(centroidsLengths);
     freeMatrixMemory(newCentroids, k);
