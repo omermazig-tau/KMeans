@@ -96,6 +96,14 @@ void get_new_centroids(unsigned int iterations, unsigned int rows, unsigned int 
 
     while (epsilonCondition == TRUE && currentIteration < iterations) {
         epsilonCondition = FALSE;
+
+        for (i = 0; i < k; i++) {
+            centroidsLengths[i] = 0;
+            for (j = 0; j < cols; j++) {
+                newCentroids[i][j] = 0.0;
+            }
+        }
+
         for (i = 0; i < rows; i++) {
             minDistance = getDistance(dataPoints[i], centroids[0], cols);
             closestCentroid = 0;
@@ -121,102 +129,9 @@ void get_new_centroids(unsigned int iterations, unsigned int rows, unsigned int 
         }
         copyArrayIntoArray(centroids, newCentroids, k, cols);
         currentIteration++;
-        for (i = 0; i < k; i++) {
-            centroidsLengths[i] = 0;
-            for (j = 0; j < cols; j++) {
-                newCentroids[i][j] = 0.0;
-            }
-        }
     }
     free(centroidsLengths);
     freeMatrixMemory(newCentroids, k);
-}
-
-int main(int argc, char *argv[]) {
-    unsigned int k;
-    char *input_file;
-    char *output_file;
-    double **dataPoints;
-    double **centroids;
-    unsigned int i;
-    unsigned int j;
-    FILE *f;
-    double epsilon = 0.001;
-    char *strK = NULL;
-    char *strIter = NULL;
-    unsigned int iterations = 200;
-    unsigned int cols = 0;
-    unsigned int rows = 1;
-    char c = '0';
-
-
-    if (argc < 4 || argc > 5) {
-        printf("Invalid Input!");
-        return 1;
-    }
-    strK = argv[1];
-    strIter = argv[2];
-    if (argc == 5) {
-        if(isNumber(strIter) == FALSE) {
-            printf("Invalid Input!");
-            return 1;
-        }
-        iterations = atoi(argv[2]);
-        input_file = argv[3];
-        output_file = argv[4];
-    } else {
-        input_file = argv[2];
-        output_file = argv[3];
-    }
-    if(isNumber(strK) == FALSE) {
-        printf("Invalid Input!");
-        return 1;
-    }
-    k = atoi(argv[1]);
-
-    f = fopen(input_file, "r");
-    if(f) {
-        while(c != '\n') {
-            fscanf(f, "%*f%c", &c);
-            cols++;
-        }
-        while(fscanf(f, "%*s\n") != EOF) {
-            rows++;
-        }
-        rewind(f);
-
-        if (rows < k) {
-            printf("An Error Has Occurred");
-            return 1;
-        }
-
-        dataPoints = createMatrix(rows, cols);
-        centroids = initialize_centroids(rows, cols, k, f, dataPoints);
-
-        fclose(f);
-    }
-    else {
-        printf("An Error Has Occurred");
-        return 1;
-    }
-
-    if(k > 0) {
-        get_new_centroids(iterations, rows, cols, k, epsilon, dataPoints, centroids);
-    }
-    f = fopen(output_file, "w");
-    if(f) {
-        for (i = 0; i < k; i++) {
-            for (j = 0; j < cols - 1; j++) {
-                fprintf(f, "%.4f%c", centroids[i][j], ',');
-            }
-            fprintf(f, "%.4f", centroids[i][cols - 1]);
-            fprintf(f, "%c", '\n');
-        }
-        fclose(f);
-    }
-    freeMatrixMemory(dataPoints, rows);
-    freeMatrixMemory(centroids, k);
-    return 0;
 }
 
 static PyObject* fit(PyObject *self, PyObject *args)
