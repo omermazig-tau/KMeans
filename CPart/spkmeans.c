@@ -3,7 +3,13 @@
 //
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <malloc.h>
+#include <assert.h>
+
+#define SIGN(x) (x >= 0 ? 1 : -1)
+#define EPSILON 1.0 * pow(10, -5)
+#define MAX_NUM_ITER 100
 
 //Core methods
 double ** get_weight_adjacency(double **, unsigned int);
@@ -69,11 +75,27 @@ double ** create_zero_matrix (unsigned int rows, unsigned int cols) {
     double ** mat;
 
     mat = malloc(sizeof(int *) * rows);
+    assert(mat);
     for (i = 0; i < rows; i++) {
         mat[i] = calloc(cols, sizeof(int));
+        assert(mat[i]);
     }
     return mat;
 }
+
+double ** create_copy_mat(double ** mat, unsigned int rows, unsigned int cols) {
+    unsigned int i, j;
+    double ** copy_mat;
+
+    copy_mat = create_zero_matrix(rows, cols);
+    for (i = 0; i < rows; i++) {
+        for (j = 0; j < cols; j++) {
+            copy_mat[i][j] = mat[i][j];
+        }
+    }
+    return copy_mat;
+}
+
 
 double get_distance_vectors(double * arr1, double * arr2, unsigned int length) {
     double sum;
@@ -137,5 +159,139 @@ double ** get_identity_mat(unsigned n) {
     return i_mat;
 }
 
+
+unsigned int * get_indexes_val_off_diag_squared_mat(double ** mat, unsigned int n) {
+    double max;
+    unsigned int i, j;
+    unsigned int * index_max;
+
+    max = 0;
+    index_max = malloc(2 * sizeof(unsigned int));
+    assert(index_max);
+    index_max[0] = 0;
+    index_max[1] = 1;
+
+    if (n == 1) {
+        index_max[1] = 0;
+        return index_max;
+    }
+    if (n == 2) {
+        max = fabs(mat[0][1]);
+    }
+    for (i = 0; i < n; i++) {
+        for (j = 0; j < n; j++) {
+            if (i != j && fabs(mat[i][j]) > max) {
+                max = fabs(mat[i][j]);
+                index_max[0] = i;
+                index_max[1] = j;
+            }
+        }
+    }
+    return index_max;
+}
+
+double ** create_matrix_p(double ** mat, unsigned int n) {
+    double ** p_mat, s, t, c, theta;
+    unsigned int * index_max, i, j;
+
+    index_max = get_indexes_val_off_diag_squared_mat(mat, n);
+    i = index_max[0];
+    j = index_max[1];
+    free(index_max);
+
+    p_mat = get_identity_mat(n);
+    theta = (mat[j][j] - mat[i][i]) / (2 * mat[i][j]);
+    t = SIGN(theta) / (fabs(theta) + sqrt(pow(theta, 2) + 1));
+    c = 1 / sqrt(pow(t, 2) + 1);
+    s = t * c;
+    p_mat[i][j] = s;
+    p_mat[i][i] = c;
+    p_mat[j][i] = -s;
+    p_mat[j][j] = c;
+    return p_mat;
+}
+
+double get_sum_squared_off_diag_element(double ** mat, unsigned int n) {
+    double sum;
+    unsigned int i, j;
+
+    sum = 0;
+    for (i = 0; i < n; i++) {
+        for (j = 0; j < n; j++) {
+            if (i != j) {
+                sum += pow(mat[i][j], 2);
+            }
+        }
+    }
+    return sum;
+}
+
+unsigned int is_convergence_diag(double ** mat_new, double ** mat_old, unsigned int n) {
+    double sum_old, sum_new;
+
+    sum_old = get_sum_squared_off_diag_element(mat_old, n);
+    sum_new = get_sum_squared_off_diag_element(mat_new, n);
+    if (sum_old - sum_new <= EPSILON) {
+        return 1;
+    }
+    return 0;
+}
+
+double ** transform_squared_matrix(double ** mat, unsigned int n) {
+    double ** trans_mat;
+    unsigned int i, j;
+
+    trans_mat = create_zero_matrix(n, n);
+    for (i = 0; i < n; i++) {
+        for (j = 0; j < n; j++) {
+            trans_mat[i][j] = mat[j][i];
+        }
+    }
+    return trans_mat;
+}
+
+double * get_diag_squared_matrix(double ** mat, unsigned int n) {
+    unsigned int i;
+    double * diag = malloc(n * sizeof(double));
+
+    for (i = 0; i < n; i++) {
+        diag[i] = mat[i][i];
+    }
+    return diag;
+}
+
+double ** add_vector_as_first_line_matrix(double ** mat, double * vector, unsigned int rows_mat, unsigned cols) {
+    double ** new_mat;
+    unsigned int i;
+
+    new_mat = create_zero_matrix(rows_mat + 1, cols + 1);
+    new_mat[0] = vector;
+    for (i = 1; i < rows_mat + 1; i++) {
+        new_mat[i] = mat[i - 1];
+    }
+    return new_mat;
+}
+
+
+double ** jacobi_algorithm(double ** mat, unsigned int n) {
+    double ** v_mat, **p_mat, **new_A, **old_A, *eigen_values, **eigen_vectors;
+    unsigned int iter;
+
+    iter = 0;
+    old_A = mat;
+    p_mat = create_matrix_p(old_A, n);
+    v_mat = create_copy_mat(p_mat, n, n);
+    new_A = multi_squared_matrices(multi_squared_matrices(transform_squared_matrix(p_mat, n), old_A, n), p_mat, n);
+    while (!(is_convergence_diag(new_A, old_A, n)) && iter < MAX_NUM_ITER) {
+        iter++;
+        old_A = new_A;
+        p_mat = create_matrix_p(old_A, n);
+        v_mat = multi_squared_matrices(v_mat, p_mat, n);
+        new_A = multi_squared_matrices(multi_squared_matrices(transform_squared_matrix(p_mat, n), old_A, n), p_mat, n);
+    }
+    eigen_values = get_diag_squared_matrix(new_A, n);
+    eigen_vectors = transform_squared_matrix(v_mat, n);
+    return add_vector_as_first_line_matrix(eigen_vectors, eigen_values, n, n);
+}
 
 
