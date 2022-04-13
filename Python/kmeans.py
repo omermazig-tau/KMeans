@@ -7,6 +7,7 @@ from typing import List, Tuple
 DEFAULT_ITERATIONS_NUMBER = 200
 DEFAULT_EPSILON = 0.001
 
+#glpldgp
 
 def read_date_from_file(filepath: str) -> List[Tuple[float]]:
     with open(filepath, 'r') as file1:
