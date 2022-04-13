@@ -4,4 +4,4 @@ project(CPart C)
 set(CMAKE_C_STANDARD 90)
 
 add_executable(CPart
-        kmeans.c)
+        kmeans.c spkmeans.c)
