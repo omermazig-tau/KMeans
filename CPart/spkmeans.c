@@ -22,9 +22,16 @@ double ** get_identity_mat(unsigned int);
 double ** get_pow_minus_half_diag_mat(double **, unsigned int);
 double ** multi_squared_matrices(double **, double **, unsigned int);
 double ** subtract_squared_matrices(double **, double **, unsigned int);
+double ** create_matrix_p(double **, unsigned int);
+double ** create_copy_mat(double **, unsigned int, unsigned int);
+unsigned int is_convergence_diag(double **, double **, unsigned int);
+double * get_diag_squared_matrix(double **, unsigned int);
+double ** add_vector_as_first_line_matrix(double **, double *, unsigned int, unsigned int);
+double ** transform_squared_matrix(double **, unsigned int);
 
 
 //Core methods
+
 
 double ** get_weight_adjacency(double ** x, unsigned int n) {
     unsigned int i, j;
@@ -52,6 +59,7 @@ double ** get_diagonal_degree_mat(double ** weights, unsigned int n) {
             sum += weights[i][z];
         }
         diag_mat[i][i] = sum;
+        sum = 0;
     }
     return diag_mat;
 }
@@ -64,6 +72,27 @@ double ** get_normalized_graph_laplacian(double ** weights, double ** diag_degre
     pow_minus_half_d = get_pow_minus_half_diag_mat(diag_degree_mat, n);
     mat2 = multi_squared_matrices(multi_squared_matrices(pow_minus_half_d, weights, n), pow_minus_half_d, n);
     return subtract_squared_matrices(mat1, mat2, n);
+}
+
+double ** jacobi_algorithm(double ** mat, unsigned int n) {
+    double ** v_mat, **p_mat, **new_A, **old_A, *eigen_values, **eigen_vectors;
+    unsigned int iter;
+
+    iter = 0;
+    old_A = mat;
+    p_mat = create_matrix_p(old_A, n);
+    v_mat = create_copy_mat(p_mat, n, n);
+    new_A = multi_squared_matrices(multi_squared_matrices(transform_squared_matrix(p_mat, n), old_A, n), p_mat, n);
+    while (!(is_convergence_diag(new_A, old_A, n)) && iter < MAX_NUM_ITER) {
+        iter++;
+        old_A = new_A;
+        p_mat = create_matrix_p(old_A, n);
+        v_mat = multi_squared_matrices(v_mat, p_mat, n);
+        new_A = multi_squared_matrices(multi_squared_matrices(transform_squared_matrix(p_mat, n), old_A, n), p_mat, n);
+    }
+    eigen_values = get_diag_squared_matrix(new_A, n);
+    eigen_vectors = v_mat;
+    return add_vector_as_first_line_matrix(eigen_vectors, eigen_values, n, n);
 }
 
 
@@ -260,7 +289,7 @@ double * get_diag_squared_matrix(double ** mat, unsigned int n) {
     return diag;
 }
 
-double ** add_vector_as_first_line_matrix(double ** mat, double * vector, unsigned int rows_mat, unsigned cols) {
+double ** add_vector_as_first_line_matrix(double ** mat, double * vector, unsigned int rows_mat, unsigned int cols) {
     double ** new_mat;
     unsigned int i;
 
@@ -273,25 +302,50 @@ double ** add_vector_as_first_line_matrix(double ** mat, double * vector, unsign
 }
 
 
-double ** jacobi_algorithm(double ** mat, unsigned int n) {
-    double ** v_mat, **p_mat, **new_A, **old_A, *eigen_values, **eigen_vectors;
-    unsigned int iter;
 
-    iter = 0;
-    old_A = mat;
-    p_mat = create_matrix_p(old_A, n);
-    v_mat = create_copy_mat(p_mat, n, n);
-    new_A = multi_squared_matrices(multi_squared_matrices(transform_squared_matrix(p_mat, n), old_A, n), p_mat, n);
-    while (!(is_convergence_diag(new_A, old_A, n)) && iter < MAX_NUM_ITER) {
-        iter++;
-        old_A = new_A;
-        p_mat = create_matrix_p(old_A, n);
-        v_mat = multi_squared_matrices(v_mat, p_mat, n);
-        new_A = multi_squared_matrices(multi_squared_matrices(transform_squared_matrix(p_mat, n), old_A, n), p_mat, n);
+unsigned int determine_k(double * eigen_values, unsigned int n) {
+    unsigned int limit, i, max_i;
+    double max;
+
+    max = fabs(eigen_values[0] - eigen_values[1]);
+    max_i = 0;
+    limit = n / 2;
+
+    for (i = 1; i <= limit; i++) {
+        if (fabs(eigen_values[i] - eigen_values[i + 1]) > max) {
+            max = fabs(eigen_values[i] - eigen_values[i + 1]);
+            max_i = i;
+        }
     }
-    eigen_values = get_diag_squared_matrix(new_A, n);
-    eigen_vectors = transform_squared_matrix(v_mat, n);
-    return add_vector_as_first_line_matrix(eigen_vectors, eigen_values, n, n);
+    return max_i + 1;
 }
+
+
+double ** get_k_first_eigenvectors(double ** eigen_vectors, unsigned int n, unsigned int k) {
+    return create_copy_mat(eigen_vectors, n, k);
+}
+
+
+double ** calc_t_mat(double ** u_mat, unsigned int rows, unsigned int cols) {
+    double ** t_mat, sum;
+    unsigned int i, j, k;
+
+    sum = 0;
+    t_mat = create_zero_matrix(rows, cols);
+    for (i = 0; i < rows; i++) {
+        for (j = 0; j < cols; j++) {
+            for (k = 0; k < cols; k++) {
+                sum += pow(u_mat[i][k], 2);
+            }
+            t_mat[i][j] = u_mat[i][j] / sqrt(sum);
+            sum = 0;
+        }
+    }
+    return t_mat;
+}
+
+
+
+
 
 
