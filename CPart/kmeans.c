@@ -10,10 +10,10 @@
 
 int isNumber(char str[]);
 double **createMatrix(unsigned int rows, unsigned int cols);
-double getDistance(double * point1, double * point2, unsigned int dimNum);
+double getDistance(const double * point1, const double * point2, unsigned int dimNum);
 void copyArrayIntoArray(double ** arrayToChange, double ** arrayToCopy, unsigned int rows, unsigned int cols);
 void freeMatrixMemory(double ** matrixToFree, unsigned int rows);
-double **initialize_centroids(int rows, int cols, int k, FILE * f, double **dataPoints);
+double **initialize_centroids(unsigned int rows, unsigned int cols, unsigned int k, FILE * f, double **dataPoints);
 static void get_new_centroids(unsigned int iterations, unsigned int rows, unsigned int cols, unsigned int k, double epsilon, double **dataPoints,double **centroids);
 
 double ** createMatrix(unsigned int rows, unsigned int cols) {
@@ -33,7 +33,7 @@ void freeMatrixMemory(double ** matrixToFree, unsigned int rows){
     free(matrixToFree);
 }
 
-double getDistance(double * point1, double * point2, unsigned int dimNum) {
+double getDistance(const double * point1, const double * point2, unsigned int dimNum) {
     unsigned int i;
     double sum;
     double distance;
@@ -65,7 +65,7 @@ void copyArrayIntoArray(double **arrayToChange, double **arrayToCopy, unsigned i
     }
 }
 
-double ** initialize_centroids(int rows, int cols, int k, FILE *f, double **dataPoints) {
+double ** initialize_centroids(unsigned int rows, unsigned int cols, unsigned int k, FILE *f, double **dataPoints) {
     int i;
     int j;
     double **centroids = createMatrix(k, cols);
@@ -134,14 +134,29 @@ void get_new_centroids(unsigned int iterations, unsigned int rows, unsigned int 
     freeMatrixMemory(newCentroids, k);
 }
 
+void write_output_to_file(char *output_file, unsigned int k, unsigned int cols, double **centroids) {
+    FILE *f;
+    int i;
+    int j;
+    f = fopen(output_file, "w");
+    if(f) {
+        for (i = 0; i < k; i++) {
+            for (j = 0; j < cols - 1; j++) {
+                fprintf(f, "%.4f%c", centroids[i][j], ',');
+            }
+            fprintf(f, "%.4f", centroids[i][cols - 1]);
+            fprintf(f, "%c", '\n');
+        }
+        fclose(f);
+    }
+}
+
 int main(int argc, char *argv[]) {
     unsigned int k;
     char *input_file;
     char *output_file;
     double **dataPoints;
     double **centroids;
-    unsigned int i;
-    unsigned int j;
     FILE *f;
     double epsilon = 0.001;
     char *strK = NULL;
@@ -205,17 +220,7 @@ int main(int argc, char *argv[]) {
     if(k > 0) {
         get_new_centroids(iterations, rows, cols, k, epsilon, dataPoints, centroids);
     }
-    f = fopen(output_file, "w");
-    if(f) {
-        for (i = 0; i < k; i++) {
-            for (j = 0; j < cols - 1; j++) {
-                fprintf(f, "%.4f%c", centroids[i][j], ',');
-            }
-            fprintf(f, "%.4f", centroids[i][cols - 1]);
-            fprintf(f, "%c", '\n');
-        }
-        fclose(f);
-    }
+    write_output_to_file(output_file, k, cols, centroids);
     freeMatrixMemory(dataPoints, rows);
     freeMatrixMemory(centroids, k);
     return 0;
