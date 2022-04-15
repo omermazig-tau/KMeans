@@ -2,131 +2,208 @@
 // Created by roydd on 4/13/2022.
 //
 #include <math.h>
+#include <string.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <malloc.h>
 #include <assert.h>
 
 #define SIGN(x) (x >= 0 ? 1 : -1)
 #define EPSILON 1.0 * pow(10, -5)
 #define MAX_NUM_ITER 100
+#define INPUT_ERR "Invalid Input!"
+#define NOT_INPUT_ERR "An Error Has Occurred"
 
 //Core methods
-double ** get_weight_adjacency(double **, unsigned int);
-double ** get_diagonal_degree_mat(double **, unsigned int);
+double ** spk (double **, unsigned int, unsigned int, unsigned int);
+double ** getWeightAdjacency(double **, unsigned int, unsigned int);
+double ** getDiagonalDegreeMat(double **, unsigned int);
+double ** getNormalizedGraphLaplacian(double **, double **, unsigned int);
+double ** jacobiAlgorithm(double **, unsigned int);
 
 // Helpful methods
-double ** create_zero_matrix(unsigned int, unsigned int);
-double get_distance_vectors(double *, double *, unsigned int);
-double ** get_identity_mat(unsigned int);
-double ** get_pow_minus_half_diag_mat(double **, unsigned int);
-double ** multi_squared_matrices(double **, double **, unsigned int);
-double ** subtract_squared_matrices(double **, double **, unsigned int);
-double ** create_matrix_p(double **, unsigned int);
-double ** create_copy_mat(double **, unsigned int, unsigned int);
-unsigned int is_convergence_diag(double **, double **, unsigned int);
-double * get_diag_squared_matrix(double **, unsigned int);
-double ** add_vector_as_first_line_matrix(double **, double *, unsigned int, unsigned int);
-double ** transform_squared_matrix(double **, unsigned int);
+double ** createZeroMatrix(unsigned int, unsigned int);
+double getDistanceVectors(double *, double *, unsigned int);
+double ** getIdentityMat(unsigned int);
+double ** getPowMinusHalfDiagMat(double **, unsigned int);
+double ** multiSquaredMatrices(double **, double **, unsigned int);
+double ** subtractSquaredMatrices(double **, double **, unsigned int);
+double ** createMatrixP(double **, unsigned int);
+double ** createCopyMat(double **, unsigned int, unsigned int);
+unsigned int isConvergenceDiag(double **, double **, unsigned int);
+double * getDiagSquaredMatrix(double **, unsigned int);
+double ** addVectorFirstLineMatrix(double **, double *, unsigned int, unsigned int);
+double ** transformSquaredMatrix(double **, unsigned int);
+unsigned int * getShapeMatrixFile(FILE *);
+double ** createMatFromFile(FILE *, const unsigned int *);
+double getSumSquaredOffDiagElement(double **, unsigned int);
+void printMat(double **, unsigned int, unsigned int);
+unsigned int determineK(double *, unsigned int);
+double ** getKFirstEigenvectors(double **, unsigned int, unsigned int);
+double ** calcTMat(double **, unsigned int, unsigned int);
+unsigned int * getIndexesValOffDiagSquaredMat(double **, unsigned int);
 
 
 //Core methods
+int main(int argc, char ** argv) {
+    char *inputFile, *goal;
+    unsigned int * shape;
+    double **x, **mat1, **mat2, **mat3, **mat4;
+    FILE *f;
+    char goalOptions[4][10] = {"wam", "ddg", "lnorm", "jacobi"};
+
+    if (argc != 3) {
+        printf(INPUT_ERR);
+        return 1;
+    }
+    inputFile = argv[2];
+    f = fopen(inputFile, "r");
+    if (!f) {
+        printf(NOT_INPUT_ERR);
+        return 1;
+    }
+    shape = getShapeMatrixFile(f);
+    x = createMatFromFile(f, shape);
+    fclose(f);
+    goal = argv[1];
 
 
-double ** get_weight_adjacency(double ** x, unsigned int n) {
+    if (strcmp(goal, goalOptions[0]) == 0) {
+        mat1 = getWeightAdjacency(x, shape[0], shape[1]);
+        printMat(mat1, shape[0], shape[0]);
+        return 0;
+    }
+    if (strcmp(goal, goalOptions[1]) == 0) {
+        mat1 = getWeightAdjacency(x, shape[0], shape[1]);
+        mat2 = getDiagonalDegreeMat(mat1, shape[0]);
+        printMat(mat2, shape[0], shape[0]);
+        return 0;
+    }
+    if (strcmp(goal, goalOptions[2]) == 0) {
+        mat1 = getWeightAdjacency(x, shape[0], shape[1]);
+        mat2 = getDiagonalDegreeMat(mat1, shape[0]);
+        mat3 = getNormalizedGraphLaplacian(mat1, mat2, shape[0]);
+        printMat(mat3, shape[0], shape[0]);
+        return 0;
+    }
+    if (strcmp(goal, goalOptions[3]) == 0) {
+        mat1 = getWeightAdjacency(x, shape[0], shape[1]);
+        mat2 = getDiagonalDegreeMat(mat1, shape[0]);
+        mat3 = getNormalizedGraphLaplacian(mat1, mat2, shape[0]);
+        mat4 = jacobiAlgorithm(mat3, shape[0]);
+        printMat(mat4, shape[0] + 1, shape[0] + 1);
+        return 0;
+    }
+    printf(INPUT_ERR);
+    return 1;
+}
+
+double ** spk (double ** x, unsigned int rows, unsigned int cols, unsigned int k) {
+    double **mat1, **mat2, **mat3, **mat4, **uMat;
+    mat1 = getWeightAdjacency(x, rows, cols);
+    mat2 = getDiagonalDegreeMat(mat1, rows);
+    mat3 = getNormalizedGraphLaplacian(mat1, mat2, rows);
+    mat4 = jacobiAlgorithm(mat3, rows);
+    if (k == 0) {
+        k = determineK(mat4[0], rows);
+    }
+    return calcTMat(mat4+1, rows, rows);
+}
+
+
+double ** getWeightAdjacency(double ** x, unsigned int n, unsigned int d) {
     unsigned int i, j;
     double ** weights;
 
-    weights = create_zero_matrix(n, n);
+    weights = createZeroMatrix(n, n);
     for (i = 0; i < n; i++) {
         for (j = 0; j < n; j++) {
             if (i != j) {
-                weights[i][j] = exp(-get_distance_vectors(x[i], x[j], n) / 2);
+                weights[i][j] = exp(-getDistanceVectors(x[i], x[j], d) / 2);
             }
         }
     }
     return weights;
 }
 
-double ** get_diagonal_degree_mat(double ** weights, unsigned int n) {
-    double ** diag_mat, sum;
+double ** getDiagonalDegreeMat(double ** weights, unsigned int n) {
+    double ** diagMat, sum;
     unsigned int i, z;
 
     sum = 0;
-    diag_mat = create_zero_matrix(n, n);
+    diagMat = createZeroMatrix(n, n);
     for (i = 0; i < n; i++) {
         for (z = 0; z < n; z++) {
             sum += weights[i][z];
         }
-        diag_mat[i][i] = sum;
+        diagMat[i][i] = sum;
         sum = 0;
     }
-    return diag_mat;
+    return diagMat;
 }
 
 
-double ** get_normalized_graph_laplacian(double ** weights, double ** diag_degree_mat, unsigned int n) {
-    double ** normalized_graph_laplacian, **mat1, **mat2, **pow_minus_half_d;
+double ** getNormalizedGraphLaplacian(double ** weights, double ** diagDegreeMat, unsigned int n) {
+    double **mat1, **mat2, **powMinusHalfD;
 
-    mat1 = get_identity_mat(n);
-    pow_minus_half_d = get_pow_minus_half_diag_mat(diag_degree_mat, n);
-    mat2 = multi_squared_matrices(multi_squared_matrices(pow_minus_half_d, weights, n), pow_minus_half_d, n);
-    return subtract_squared_matrices(mat1, mat2, n);
+    mat1 = getIdentityMat(n);
+    powMinusHalfD = getPowMinusHalfDiagMat(diagDegreeMat, n);
+    mat2 = multiSquaredMatrices(multiSquaredMatrices(powMinusHalfD, weights, n), powMinusHalfD, n);
+    return subtractSquaredMatrices(mat1, mat2, n);
 }
 
-double ** jacobi_algorithm(double ** mat, unsigned int n) {
-    double ** v_mat, **p_mat, **new_A, **old_A, *eigen_values, **eigen_vectors;
+double ** jacobiAlgorithm(double ** mat, unsigned int n) {
+    double ** vMat, **pMat, **newA, **oldA, *eigenValues, **eigenVectors;
     unsigned int iter;
 
     iter = 0;
-    old_A = mat;
-    p_mat = create_matrix_p(old_A, n);
-    v_mat = create_copy_mat(p_mat, n, n);
-    new_A = multi_squared_matrices(multi_squared_matrices(transform_squared_matrix(p_mat, n), old_A, n), p_mat, n);
-    while (!(is_convergence_diag(new_A, old_A, n)) && iter < MAX_NUM_ITER) {
+    oldA = mat;
+    pMat = createMatrixP(oldA, n);
+    vMat = createCopyMat(pMat, n, n);
+    newA = multiSquaredMatrices(multiSquaredMatrices(transformSquaredMatrix(pMat, n), oldA, n), pMat, n);
+    while (!(isConvergenceDiag(newA, oldA, n)) && iter < MAX_NUM_ITER) {
         iter++;
-        old_A = new_A;
-        p_mat = create_matrix_p(old_A, n);
-        v_mat = multi_squared_matrices(v_mat, p_mat, n);
-        new_A = multi_squared_matrices(multi_squared_matrices(transform_squared_matrix(p_mat, n), old_A, n), p_mat, n);
+        oldA = newA;
+        pMat = createMatrixP(oldA, n);
+        vMat = multiSquaredMatrices(vMat, pMat, n);
+        newA = multiSquaredMatrices(multiSquaredMatrices(transformSquaredMatrix(pMat, n), oldA, n), pMat, n);
     }
-    eigen_values = get_diag_squared_matrix(new_A, n);
-    eigen_vectors = v_mat;
-    return add_vector_as_first_line_matrix(eigen_vectors, eigen_values, n, n);
+    eigenValues = getDiagSquaredMatrix(newA, n);
+    eigenVectors = vMat;
+    return addVectorFirstLineMatrix(eigenVectors, eigenValues, n, n);
 }
 
 
 
 // Helpful methods
 
-double ** create_zero_matrix (unsigned int rows, unsigned int cols) {
-    unsigned int i, j;
+double ** createZeroMatrix (unsigned int rows, unsigned int cols) {
+    unsigned int i;
     double ** mat;
 
-    mat = malloc(sizeof(int *) * rows);
+    mat = (double **)malloc(sizeof(double *) * rows);
     assert(mat);
     for (i = 0; i < rows; i++) {
-        mat[i] = calloc(cols, sizeof(int));
+        mat[i] = (double *)calloc(cols, sizeof(double));
         assert(mat[i]);
     }
     return mat;
 }
 
-double ** create_copy_mat(double ** mat, unsigned int rows, unsigned int cols) {
+double ** createCopyMat(double ** mat, unsigned int rows, unsigned int cols) {
     unsigned int i, j;
-    double ** copy_mat;
+    double ** copyMat;
 
-    copy_mat = create_zero_matrix(rows, cols);
+    copyMat = createZeroMatrix(rows, cols);
     for (i = 0; i < rows; i++) {
         for (j = 0; j < cols; j++) {
-            copy_mat[i][j] = mat[i][j];
+            copyMat[i][j] = mat[i][j];
         }
     }
-    return copy_mat;
+    return copyMat;
 }
 
 
-double get_distance_vectors(double * arr1, double * arr2, unsigned int length) {
+double getDistanceVectors(double * arr1, double * arr2, unsigned int length) {
     double sum;
     unsigned int i;
 
@@ -137,11 +214,11 @@ double get_distance_vectors(double * arr1, double * arr2, unsigned int length) {
     return sqrt(sum);
 }
 
-double ** subtract_squared_matrices(double ** mat1, double ** mat2, unsigned int n) {
+double ** subtractSquaredMatrices(double ** mat1, double ** mat2, unsigned int n) {
     double ** mat;
     unsigned int i, j;
 
-    mat = create_zero_matrix(n, n);
+    mat = createZeroMatrix(n, n);
     for (i = 0; i < n; i++) {
         for (j = 0; j < n; j++) {
             mat[i][j] = mat1[i][j] - mat2[i][j];
@@ -150,11 +227,11 @@ double ** subtract_squared_matrices(double ** mat1, double ** mat2, unsigned int
     return mat;
 }
 
-double ** multi_squared_matrices(double ** mat1, double ** mat2, unsigned int n) {
+double ** multiSquaredMatrices(double ** mat1, double ** mat2, unsigned int n) {
     double ** mat;
     unsigned int i, j, k;
 
-    mat = create_zero_matrix(n, n);
+    mat = createZeroMatrix(n, n);
     for (i = 0; i < n; i++) {
         for (j = 0; j < n; j++) {
             for (k = 0; k < n; k++) {
@@ -166,43 +243,43 @@ double ** multi_squared_matrices(double ** mat1, double ** mat2, unsigned int n)
 }
 
 
-double ** get_pow_minus_half_diag_mat(double ** mat, unsigned int n) {
-    double ** minus_squared_diag_mat;
-    unsigned int i, j;
-
-    minus_squared_diag_mat = create_zero_matrix(n, n);
-    for (i = 0; i < n; i++) {
-        minus_squared_diag_mat[i][i] = 1 / sqrt(mat[i][i]);
-    }
-    return minus_squared_diag_mat;
-}
-
-double ** get_identity_mat(unsigned n) {
-    double ** i_mat;
+double ** getPowMinusHalfDiagMat(double ** mat, unsigned int n) {
+    double **minusSquaredDiagMat;
     unsigned int i;
 
-    i_mat = create_zero_matrix(n, n);
+   minusSquaredDiagMat = createZeroMatrix(n, n);
     for (i = 0; i < n; i++) {
-        i_mat[i][i] = 1.0;
+       minusSquaredDiagMat[i][i] = 1 / sqrt(mat[i][i]);
     }
-    return i_mat;
+    return minusSquaredDiagMat;
+}
+
+double ** getIdentityMat(unsigned n) {
+    double **iMat;
+    unsigned int i;
+
+   iMat = createZeroMatrix(n, n);
+    for (i = 0; i < n; i++) {
+       iMat[i][i] = 1.0;
+    }
+    return iMat;
 }
 
 
-unsigned int * get_indexes_val_off_diag_squared_mat(double ** mat, unsigned int n) {
+unsigned int * getIndexesValOffDiagSquaredMat(double ** mat, unsigned int n) {
     double max;
     unsigned int i, j;
-    unsigned int * index_max;
+    unsigned int * indexMax;
 
     max = 0;
-    index_max = malloc(2 * sizeof(unsigned int));
-    assert(index_max);
-    index_max[0] = 0;
-    index_max[1] = 1;
+    indexMax = (unsigned int *)malloc(2 * sizeof(unsigned int));
+    assert(indexMax);
+    indexMax[0] = 0;
+    indexMax[1] = 1;
 
     if (n == 1) {
-        index_max[1] = 0;
-        return index_max;
+        indexMax[1] = 0;
+        return indexMax;
     }
     if (n == 2) {
         max = fabs(mat[0][1]);
@@ -211,36 +288,36 @@ unsigned int * get_indexes_val_off_diag_squared_mat(double ** mat, unsigned int 
         for (j = 0; j < n; j++) {
             if (i != j && fabs(mat[i][j]) > max) {
                 max = fabs(mat[i][j]);
-                index_max[0] = i;
-                index_max[1] = j;
+                indexMax[0] = i;
+                indexMax[1] = j;
             }
         }
     }
-    return index_max;
+    return indexMax;
 }
 
-double ** create_matrix_p(double ** mat, unsigned int n) {
-    double ** p_mat, s, t, c, theta;
-    unsigned int * index_max, i, j;
+double ** createMatrixP(double ** mat, unsigned int n) {
+    double ** pMat, s, t, c, theta;
+    unsigned int * indexMax, i, j;
 
-    index_max = get_indexes_val_off_diag_squared_mat(mat, n);
-    i = index_max[0];
-    j = index_max[1];
-    free(index_max);
+    indexMax = getIndexesValOffDiagSquaredMat(mat, n);
+    i = indexMax[0];
+    j = indexMax[1];
+    free(indexMax);
 
-    p_mat = get_identity_mat(n);
+    pMat = getIdentityMat(n);
     theta = (mat[j][j] - mat[i][i]) / (2 * mat[i][j]);
     t = SIGN(theta) / (fabs(theta) + sqrt(pow(theta, 2) + 1));
     c = 1 / sqrt(pow(t, 2) + 1);
     s = t * c;
-    p_mat[i][j] = s;
-    p_mat[i][i] = c;
-    p_mat[j][i] = -s;
-    p_mat[j][j] = c;
-    return p_mat;
+    pMat[i][j] = s;
+    pMat[i][i] = c;
+    pMat[j][i] = -s;
+    pMat[j][j] = c;
+    return pMat;
 }
 
-double get_sum_squared_off_diag_element(double ** mat, unsigned int n) {
+double getSumSquaredOffDiagElement(double ** mat, unsigned int n) {
     double sum;
     unsigned int i, j;
 
@@ -255,93 +332,149 @@ double get_sum_squared_off_diag_element(double ** mat, unsigned int n) {
     return sum;
 }
 
-unsigned int is_convergence_diag(double ** mat_new, double ** mat_old, unsigned int n) {
-    double sum_old, sum_new;
+unsigned int isConvergenceDiag(double ** matNew, double ** matOld, unsigned int n) {
+    double sumOld, sumNew;
 
-    sum_old = get_sum_squared_off_diag_element(mat_old, n);
-    sum_new = get_sum_squared_off_diag_element(mat_new, n);
-    if (sum_old - sum_new <= EPSILON) {
+    sumOld = getSumSquaredOffDiagElement(matOld, n);
+    sumNew = getSumSquaredOffDiagElement(matNew, n);
+    if (sumOld - sumNew <= EPSILON) {
         return 1;
     }
     return 0;
 }
 
-double ** transform_squared_matrix(double ** mat, unsigned int n) {
-    double ** trans_mat;
+double ** transformSquaredMatrix(double ** mat, unsigned int n) {
+    double ** transMat;
     unsigned int i, j;
 
-    trans_mat = create_zero_matrix(n, n);
+    transMat = createZeroMatrix(n, n);
     for (i = 0; i < n; i++) {
         for (j = 0; j < n; j++) {
-            trans_mat[i][j] = mat[j][i];
+            transMat[i][j] = mat[j][i];
         }
     }
-    return trans_mat;
+    return transMat;
 }
 
-double * get_diag_squared_matrix(double ** mat, unsigned int n) {
+double * getDiagSquaredMatrix(double ** mat, unsigned int n) {
     unsigned int i;
-    double * diag = malloc(n * sizeof(double));
+    double * diag;
 
+    diag = (double *)malloc(n * sizeof(double));
     for (i = 0; i < n; i++) {
         diag[i] = mat[i][i];
     }
     return diag;
 }
 
-double ** add_vector_as_first_line_matrix(double ** mat, double * vector, unsigned int rows_mat, unsigned int cols) {
-    double ** new_mat;
+double ** addVectorFirstLineMatrix(double ** mat, double * vector, unsigned int rowsMat, unsigned int cols) {
+    double ** newMat;
     unsigned int i;
 
-    new_mat = create_zero_matrix(rows_mat + 1, cols + 1);
-    new_mat[0] = vector;
-    for (i = 1; i < rows_mat + 1; i++) {
-        new_mat[i] = mat[i - 1];
+    newMat = createZeroMatrix(rowsMat + 1, cols + 1);
+    newMat[0] = vector;
+    for (i = 1; i < rowsMat + 1; i++) {
+        newMat[i] = mat[i - 1];
     }
-    return new_mat;
+    return newMat;
 }
 
 
 
-unsigned int determine_k(double * eigen_values, unsigned int n) {
-    unsigned int limit, i, max_i;
+unsigned int determineK(double * eigenValues, unsigned int n) {
+    unsigned int limit, i, maxI;
     double max;
 
-    max = fabs(eigen_values[0] - eigen_values[1]);
-    max_i = 0;
+    max = fabs(eigenValues[0] - eigenValues[1]);
+    maxI = 0;
     limit = n / 2;
 
     for (i = 1; i <= limit; i++) {
-        if (fabs(eigen_values[i] - eigen_values[i + 1]) > max) {
-            max = fabs(eigen_values[i] - eigen_values[i + 1]);
-            max_i = i;
+        if (fabs(eigenValues[i] - eigenValues[i + 1]) > max) {
+            max = fabs(eigenValues[i] - eigenValues[i + 1]);
+            maxI = i;
         }
     }
-    return max_i + 1;
+    return maxI + 1;
 }
 
 
-double ** get_k_first_eigenvectors(double ** eigen_vectors, unsigned int n, unsigned int k) {
-    return create_copy_mat(eigen_vectors, n, k);
+double ** getKFirstEigenvectors(double ** eigenVectors, unsigned int n, unsigned int k) {
+    return createCopyMat(eigenVectors, n, k);
 }
 
 
-double ** calc_t_mat(double ** u_mat, unsigned int rows, unsigned int cols) {
-    double ** t_mat, sum;
+double ** calcTMat(double ** uMat, unsigned int rows, unsigned int cols) {
+    double ** tMat, sum;
     unsigned int i, j, k;
 
     sum = 0;
-    t_mat = create_zero_matrix(rows, cols);
+    tMat = createZeroMatrix(rows, cols);
     for (i = 0; i < rows; i++) {
         for (j = 0; j < cols; j++) {
             for (k = 0; k < cols; k++) {
-                sum += pow(u_mat[i][k], 2);
+                sum += pow(uMat[i][k], 2);
             }
-            t_mat[i][j] = u_mat[i][j] / sqrt(sum);
+            tMat[i][j] = uMat[i][j] / sqrt(sum);
             sum = 0;
         }
     }
-    return t_mat;
+    return tMat;
+}
+
+unsigned int * getShapeMatrixFile(FILE * f) {
+    unsigned int *shape, doneCol;
+    char c;
+
+    shape = (unsigned int *)malloc(2 * sizeof(unsigned int));
+    assert(shape);
+    doneCol = 0;
+    c = '0';
+    shape[0] = 1;
+    shape[1] = 1;
+
+    while (c != EOF) {
+        c = (char)fgetc(f);
+        if (doneCol == 0 && c == ',') {
+            shape[1]++;
+        }
+        if (c == '\n') {
+            shape[0] ++;
+            doneCol = 1;
+        }
+    }
+    rewind(f);
+    return shape;
+}
+
+
+double ** createMatFromFile(FILE * f, const unsigned int * shape) {
+    unsigned int rows, cols, i, j;
+    double **mat;
+
+    rows = shape[0];
+    cols = shape[1];
+    mat = createZeroMatrix(rows, cols);
+    for(i = 0; i < rows; i++)
+    {
+        for (j = 0; j < cols; j++) {
+            fscanf(f, "%lf%*c", &mat[i][j]);
+        }
+    }
+    return mat;
+}
+
+void printMat(double ** mat, unsigned int rows, unsigned int cols) {
+    unsigned int i, j;
+    for (i = 0; i < rows; i++) {
+        for (j = 0; j < cols; j++) {
+            printf("%.4f", mat[i][j]);
+            if (j + 1 != cols) {
+                printf(",");
+            }
+        }
+        printf("\n");
+    }
 }
 
 
