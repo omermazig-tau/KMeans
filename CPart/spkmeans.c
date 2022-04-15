@@ -6,43 +6,7 @@
 #include <stdio.h>
 #include <malloc.h>
 #include <assert.h>
-
-#define SIGN(x) (x >= 0 ? 1 : -1)
-#define EPSILON 1.0 * pow(10, -5)
-#define MAX_NUM_ITER 100
-#define INPUT_ERR "Invalid Input!"
-#define NOT_INPUT_ERR "An Error Has Occurred"
-
-//Core methods
-double ** spk (double **, unsigned int, unsigned int, unsigned int);
-double ** getWeightAdjacency(double **, unsigned int, unsigned int);
-double ** getDiagonalDegreeMat(double **, unsigned int);
-double ** getNormalizedGraphLaplacian(double **, double **, unsigned int);
-double ** jacobiAlgorithm(double **, unsigned int);
-
-// Helpful methods
-double ** createZeroMatrix(unsigned int, unsigned int);
-double getDistanceVectors(double *, double *, unsigned int);
-double ** getIdentityMat(unsigned int);
-double ** getPowMinusHalfDiagMat(double **, unsigned int);
-double ** multiSquaredMatrices(double **, double **, unsigned int);
-double ** subtractSquaredMatrices(double **, double **, unsigned int);
-double ** createMatrixP(double **, unsigned int);
-double ** createCopyMat(double **, unsigned int, unsigned int);
-unsigned int isConvergenceDiag(double **, double **, unsigned int);
-double * getDiagSquaredMatrix(double **, unsigned int);
-double ** addVectorFirstLineMatrix(double **, double *, unsigned int, unsigned int);
-double ** transformSquaredMatrix(double **, unsigned int);
-unsigned int * getShapeMatrixFile(FILE *);
-double ** createMatFromFile(FILE *, const unsigned int *);
-double getSumSquaredOffDiagElement(double **, unsigned int);
-void printMat(double **, unsigned int, unsigned int);
-unsigned int determineK(double *, unsigned int);
-double ** getKFirstEigenvectors(double **, unsigned int, unsigned int);
-double ** calcTMat(double **, unsigned int, unsigned int);
-unsigned int * getIndexesValOffDiagSquaredMat(double **, unsigned int);
-
-
+#include "spkmeans.h"
 //Core methods
 int main(int argc, char ** argv) {
     char *inputFile, *goal;
