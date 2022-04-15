@@ -30,7 +30,6 @@ int main(int argc, char ** argv) {
     fclose(f);
     goal = argv[1];
 
-
     if (strcmp(goal, goalOptions[0]) == 0) {
         mat1 = getWeightAdjacency(x, shape[0], shape[1]);
         printMat(mat1, shape[0], shape[0]);

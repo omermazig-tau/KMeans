@@ -151,6 +151,7 @@ void write_output_to_file(char *output_file, unsigned int k, unsigned int cols, 
     }
 }
 
+/*
 int main(int argc, char *argv[]) {
     unsigned int k;
     char *input_file;
@@ -225,3 +226,4 @@ int main(int argc, char *argv[]) {
     freeMatrixMemory(centroids, k);
     return 0;
 }
+ */
