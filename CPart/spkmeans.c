@@ -1,17 +1,13 @@
 //
 // Created by roydd on 4/13/2022.
 //
-#include <math.h>
-#include <string.h>
-#include <stdio.h>
-#include <malloc.h>
-#include <assert.h>
 #include "spkmeans.h"
+
 //Core methods
 int main(int argc, char ** argv) {
     char *inputFile, *goal;
     unsigned int * shape;
-    double **x, **mat1, **mat2, **mat3, **mat4;
+    double **x, **mat1, **mat2, **mat3;
     FILE *f;
     char goalOptions[4][10] = {"wam", "ddg", "lnorm", "jacobi"};
 
@@ -29,16 +25,21 @@ int main(int argc, char ** argv) {
     x = createMatFromFile(f, shape);
     fclose(f);
     goal = argv[1];
+    spk(x, shape[0], shape[1], 2);
+
 
     if (strcmp(goal, goalOptions[0]) == 0) {
         mat1 = getWeightAdjacency(x, shape[0], shape[1]);
         printMat(mat1, shape[0], shape[0]);
+        freeMat(mat1, shape[0]);
         return 0;
     }
     if (strcmp(goal, goalOptions[1]) == 0) {
         mat1 = getWeightAdjacency(x, shape[0], shape[1]);
         mat2 = getDiagonalDegreeMat(mat1, shape[0]);
         printMat(mat2, shape[0], shape[0]);
+        freeMat(mat1, shape[0]);
+        freeMat(mat2, shape[0]);
         return 0;
     }
     if (strcmp(goal, goalOptions[2]) == 0) {
@@ -46,14 +47,15 @@ int main(int argc, char ** argv) {
         mat2 = getDiagonalDegreeMat(mat1, shape[0]);
         mat3 = getNormalizedGraphLaplacian(mat1, mat2, shape[0]);
         printMat(mat3, shape[0], shape[0]);
+        freeMat(mat1, shape[0]);
+        freeMat(mat2, shape[0]);
+        freeMat(mat3, shape[0]);
         return 0;
     }
     if (strcmp(goal, goalOptions[3]) == 0) {
-        mat1 = getWeightAdjacency(x, shape[0], shape[1]);
-        mat2 = getDiagonalDegreeMat(mat1, shape[0]);
-        mat3 = getNormalizedGraphLaplacian(mat1, mat2, shape[0]);
-        mat4 = jacobiAlgorithm(mat3, shape[0]);
-        printMat(mat4, shape[0] + 1, shape[0] + 1);
+        mat1 = jacobiAlgorithm(x, shape[0]);
+        printMat(mat1, shape[0] + 1, shape[0]);
+        freeMat(mat1, shape[0]);
         return 0;
     }
     printf(INPUT_ERR);
@@ -61,15 +63,29 @@ int main(int argc, char ** argv) {
 }
 
 double ** spk (double ** x, unsigned int rows, unsigned int cols, unsigned int k) {
-    double **mat1, **mat2, **mat3, **mat4, **uMat;
+    double **mat1, **mat2, **mat3, **mat4, **mat5, **tMat;
+
     mat1 = getWeightAdjacency(x, rows, cols);
     mat2 = getDiagonalDegreeMat(mat1, rows);
     mat3 = getNormalizedGraphLaplacian(mat1, mat2, rows);
     mat4 = jacobiAlgorithm(mat3, rows);
+
     if (k == 0) {
+        mat5 = mat4;
         k = determineK(mat4[0], rows);
+        mat4 = getKFirstEigenvectors(mat4, rows, k);
+        freeMat(mat5, rows);
     }
-    return calcTMat(mat4+1, rows, rows);
+    freeMat(mat1, rows);
+    freeMat(mat2, rows);
+    freeMat(mat3, rows);
+    freeMat(mat4, rows);
+
+    tMat =  calcTMat(mat4+1, rows, k);
+    printf("T\n");
+    printMat(tMat, rows, k);
+    printf("\n");
+    return tMat;
 }
 
 
@@ -106,33 +122,59 @@ double ** getDiagonalDegreeMat(double ** weights, unsigned int n) {
 
 
 double ** getNormalizedGraphLaplacian(double ** weights, double ** diagDegreeMat, unsigned int n) {
-    double **mat1, **mat2, **powMinusHalfD;
+    double **mat1, **mat2, **mat3, **powMinusHalfD, **NormalizedGraphLaplacian;
 
     mat1 = getIdentityMat(n);
     powMinusHalfD = getPowMinusHalfDiagMat(diagDegreeMat, n);
-    mat2 = multiSquaredMatrices(multiSquaredMatrices(powMinusHalfD, weights, n), powMinusHalfD, n);
-    return subtractSquaredMatrices(mat1, mat2, n);
+    mat3 = multiSquaredMatrices(powMinusHalfD, weights, n);
+    mat2 = multiSquaredMatrices(mat3, powMinusHalfD, n);
+    NormalizedGraphLaplacian = subtractSquaredMatrices(mat1, mat2, n);
+    freeMat(mat1, n);
+    freeMat(mat2, n);
+    freeMat(mat3, n);
+    return NormalizedGraphLaplacian;
 }
 
 double ** jacobiAlgorithm(double ** mat, unsigned int n) {
-    double ** vMat, **pMat, **newA, **oldA, *eigenValues, **eigenVectors;
+    double ** vMat, **pMat, **newA, **oldA, *eigenValues, **eigenVectors, **oldVMat, **returnedMat, **matForMulti, **transP;
     unsigned int iter;
 
     iter = 0;
-    oldA = mat;
+    oldA = createCopyMat(mat, n, n);
     pMat = createMatrixP(oldA, n);
     vMat = createCopyMat(pMat, n, n);
-    newA = multiSquaredMatrices(multiSquaredMatrices(transformSquaredMatrix(pMat, n), oldA, n), pMat, n);
-    while (!(isConvergenceDiag(newA, oldA, n)) && iter < MAX_NUM_ITER) {
+    transP = transformSquaredMatrix(pMat, n);
+    matForMulti = multiSquaredMatrices(transP, oldA, n);
+    newA = multiSquaredMatrices(matForMulti, pMat, n);
+    freeMat(transP, n);
+    freeMat(matForMulti, n);
+
+    while (!(isConvergenceDiag(newA, oldA, n)) && iter < MAX_NUM_ITER && !(isDiagonal(newA, n))) {
         iter++;
+        freeMat(oldA, n);
         oldA = newA;
+        freeMat(pMat, n);
         pMat = createMatrixP(oldA, n);
+
+        oldVMat = vMat;
         vMat = multiSquaredMatrices(vMat, pMat, n);
-        newA = multiSquaredMatrices(multiSquaredMatrices(transformSquaredMatrix(pMat, n), oldA, n), pMat, n);
+        freeMat(oldVMat, n);
+
+        transP = transformSquaredMatrix(pMat, n);
+        matForMulti = multiSquaredMatrices(transP, oldA, n);
+        newA = multiSquaredMatrices(matForMulti, pMat, n);
+        freeMat(transP, n);
+        freeMat(matForMulti, n);
     }
+
+    freeMat(oldA, n);
     eigenValues = getDiagSquaredMatrix(newA, n);
     eigenVectors = vMat;
-    return addVectorFirstLineMatrix(eigenVectors, eigenValues, n, n);
+    returnedMat = addVectorFirstLineMatrix(eigenVectors, eigenValues, n, n);
+
+    free(eigenValues);
+    freeMat(eigenVectors, n);
+    return returnedMat;
 }
 
 
@@ -300,10 +342,10 @@ unsigned int isConvergenceDiag(double ** matNew, double ** matOld, unsigned int 
 
     sumOld = getSumSquaredOffDiagElement(matOld, n);
     sumNew = getSumSquaredOffDiagElement(matNew, n);
-    if (sumOld - sumNew <= EPSILON) {
-        return 1;
+    if (fabs(sumOld - sumNew) <= EPSILON) {
+        return TRUE;
     }
-    return 0;
+    return FALSE;
 }
 
 double ** transformSquaredMatrix(double ** mat, unsigned int n) {
@@ -330,14 +372,18 @@ double * getDiagSquaredMatrix(double ** mat, unsigned int n) {
     return diag;
 }
 
-double ** addVectorFirstLineMatrix(double ** mat, double * vector, unsigned int rowsMat, unsigned int cols) {
+double ** addVectorFirstLineMatrix(double ** mat, const double * vector, unsigned int rowsMat, unsigned int cols) {
     double ** newMat;
-    unsigned int i;
+    unsigned int i, j;
 
-    newMat = createZeroMatrix(rowsMat + 1, cols + 1);
-    newMat[0] = vector;
-    for (i = 1; i < rowsMat + 1; i++) {
-        newMat[i] = mat[i - 1];
+    newMat = createZeroMatrix(rowsMat + 1, cols);
+    for (j = 0; j < cols; j++) {
+        newMat[0][j] = vector[j];
+    }
+    for (i = 0; i < rowsMat; i++) {
+        for (j = 0; j < cols; j++) {
+            newMat[i + 1][j] = mat[i][j];
+        }
     }
     return newMat;
 }
@@ -441,6 +487,27 @@ void printMat(double ** mat, unsigned int rows, unsigned int cols) {
 }
 
 
+unsigned int isDiagonal(double ** mat, unsigned int n) {
+    unsigned int i, j;
+
+    for (i = 0; i < n; i++) {
+        for (j = 0; j < n; j++) {
+            if (i != j && mat[i][j] != 0) {
+                return FALSE;
+            }
+        }
+    }
+    return TRUE;
+}
+
+void freeMat(double ** mat, unsigned int rows){
+    unsigned int i;
+
+    for (i = 0; i < rows; i++) {
+        free(mat[i]);
+    }
+    free(mat);
+}
 
 
 

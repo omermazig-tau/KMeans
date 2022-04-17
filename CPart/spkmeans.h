@@ -5,12 +5,19 @@
 #ifndef CPART_SPKMEANS_H
 #define CPART_SPKMEANS_H
 
+#define TRUE 1
+#define FALSE 0
 #define INPUT_ERR "Invalid Input!"
 #define NOT_INPUT_ERR "Invalid Input!"
 #define MAX_NUM_ITER 100
 #define EPSILON pow(10, -5)
 #define SIGN(x) x >= 0 ? 1 : -1
 
+#include <math.h>
+#include <string.h>
+#include <stdio.h>
+#include <assert.h>
+#include <stdlib.h>
 
 double ** spk (double ** x, unsigned int rows, unsigned int cols, unsigned int k);
 double ** getWeightAdjacency(double ** x, unsigned int n, unsigned int d);
@@ -30,14 +37,15 @@ double getSumSquaredOffDiagElement(double ** mat, unsigned int n);
 unsigned int isConvergenceDiag(double ** matNew, double ** matOld, unsigned int n);
 double ** transformSquaredMatrix(double ** mat, unsigned int n);
 double * getDiagSquaredMatrix(double ** mat, unsigned int n);
-double ** addVectorFirstLineMatrix(double ** mat, double * vector, unsigned int rowsMat, unsigned int cols);
+double ** addVectorFirstLineMatrix(double ** mat, const double * vector, unsigned int rowsMat, unsigned int cols);
 unsigned int determineK(double * eigenValues, unsigned int n);
 double ** getKFirstEigenvectors(double ** eigenVectors, unsigned int n, unsigned int k);
 double ** calcTMat(double ** uMat, unsigned int rows, unsigned int cols);
 unsigned int * getShapeMatrixFile(FILE * f);
 double ** createMatFromFile(FILE * f, const unsigned int * shape);
 void printMat(double ** mat, unsigned int rows, unsigned int cols);
-
+unsigned int isDiagonal(double ** mat, unsigned int n);
+void freeMat(double ** mat, unsigned int rows);
 
 
 #endif //CPART_SPKMEANS_H
