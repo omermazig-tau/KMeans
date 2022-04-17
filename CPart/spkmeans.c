@@ -82,9 +82,6 @@ double ** spk (double ** x, unsigned int rows, unsigned int cols, unsigned int k
     freeMat(mat4, rows);
 
     tMat =  calcTMat(mat4+1, rows, k);
-    printf("T\n");
-    printMat(tMat, rows, k);
-    printf("\n");
     return tMat;
 }
 
@@ -439,7 +436,7 @@ unsigned int * getShapeMatrixFile(FILE * f) {
     assert(shape);
     doneCol = 0;
     c = '0';
-    shape[0] = 1;
+    shape[0] = 0;
     shape[1] = 1;
 
     while (c != EOF) {
