@@ -16,7 +16,6 @@
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
-#include <assert.h>
 #include <stdlib.h>
 
 double ** spk (double ** x, unsigned int rows, unsigned int cols, unsigned int k);
@@ -46,6 +45,7 @@ double ** createMatFromFile(FILE * f, const unsigned int * shape);
 void printMat(double ** mat, unsigned int rows, unsigned int cols);
 unsigned int isDiagonal(double ** mat, unsigned int n);
 void freeMat(double ** mat, unsigned int rows);
+unsigned int checkMatSymmetric(double ** mat, unsigned int rows, unsigned int cols);
 
 
 #endif //CPART_SPKMEANS_H

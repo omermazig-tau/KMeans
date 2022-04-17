@@ -32,6 +32,8 @@ int main(int argc, char ** argv) {
         mat1 = getWeightAdjacency(x, shape[0], shape[1]);
         printMat(mat1, shape[0], shape[0]);
         freeMat(mat1, shape[0]);
+        freeMat(x, shape[0]);
+        free(shape);
         return 0;
     }
     if (strcmp(goal, goalOptions[1]) == 0) {
@@ -40,6 +42,8 @@ int main(int argc, char ** argv) {
         printMat(mat2, shape[0], shape[0]);
         freeMat(mat1, shape[0]);
         freeMat(mat2, shape[0]);
+        freeMat(x, shape[0]);
+        free(shape);
         return 0;
     }
     if (strcmp(goal, goalOptions[2]) == 0) {
@@ -50,12 +54,20 @@ int main(int argc, char ** argv) {
         freeMat(mat1, shape[0]);
         freeMat(mat2, shape[0]);
         freeMat(mat3, shape[0]);
+        freeMat(x, shape[0]);
+        free(shape);
         return 0;
     }
     if (strcmp(goal, goalOptions[3]) == 0) {
+        if (shape[0] != shape[1] || !checkMatSymmetric(x, shape[0], shape[0])) { //Not symmetric of squared
+            printf(INPUT_ERR);
+            return 1;
+        }
         mat1 = jacobiAlgorithm(x, shape[0]);
         printMat(mat1, shape[0] + 1, shape[0]);
         freeMat(mat1, shape[0]);
+        freeMat(x, shape[0]);
+        free(shape);
         return 0;
     }
     printf(INPUT_ERR);
@@ -73,6 +85,10 @@ double ** spk (double ** x, unsigned int rows, unsigned int cols, unsigned int k
     if (k == 0) {
         mat5 = mat4;
         k = determineK(mat4[0], rows);
+        if (k == 1) {
+            printf(NOT_INPUT_ERR);
+            exit(1);
+        }
         mat4 = getKFirstEigenvectors(mat4, rows, k);
         freeMat(mat5, rows);
     }
@@ -183,10 +199,16 @@ double ** createZeroMatrix (unsigned int rows, unsigned int cols) {
     double ** mat;
 
     mat = (double **)malloc(sizeof(double *) * rows);
-    assert(mat);
+    if(!mat) {
+        printf(NOT_INPUT_ERR);
+        exit(1);
+    }
     for (i = 0; i < rows; i++) {
         mat[i] = (double *)calloc(cols, sizeof(double));
-        assert(mat[i]);
+        if(!mat[i]) {
+            printf(NOT_INPUT_ERR);
+            exit(1);
+        }
     }
     return mat;
 }
@@ -275,7 +297,10 @@ unsigned int * getIndexesValOffDiagSquaredMat(double ** mat, unsigned int n) {
 
     max = 0;
     indexMax = (unsigned int *)malloc(2 * sizeof(unsigned int));
-    assert(indexMax);
+    if(!indexMax) {
+        printf(NOT_INPUT_ERR);
+        exit(1);
+    }
     indexMax[0] = 0;
     indexMax[1] = 1;
 
@@ -433,7 +458,10 @@ unsigned int * getShapeMatrixFile(FILE * f) {
     char c;
 
     shape = (unsigned int *)malloc(2 * sizeof(unsigned int));
-    assert(shape);
+    if(!shape) {
+        printf(NOT_INPUT_ERR);
+        exit(1);
+    }
     doneCol = 0;
     c = '0';
     shape[0] = 0;
@@ -509,6 +537,19 @@ void freeMat(double ** mat, unsigned int rows){
         free(mat[i]);
     }
     free(mat);
+}
+
+unsigned int checkMatSymmetric(double ** mat, unsigned int rows, unsigned int cols) {
+    unsigned int i, j;
+
+    for (i = 0; i < rows; i++) {
+        for (j = 0; j < cols; j++) {
+            if (mat[i][j] != mat[j][i]) {
+                return FALSE;
+            }
+        }
+    }
+    return TRUE;
 }
 
 
