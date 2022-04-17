@@ -474,7 +474,12 @@ void printMat(double ** mat, unsigned int rows, unsigned int cols) {
     unsigned int i, j;
     for (i = 0; i < rows; i++) {
         for (j = 0; j < cols; j++) {
-            printf("%.4f", mat[i][j]);
+            if (mat[i][j] == 0)  { //Prevent printing of -0.0000
+                printf("%.4f", 0.0);
+            }
+            else {
+                printf("%.4f", mat[i][j]);
+            }
             if (j + 1 != cols) {
                 printf(",");
             }
