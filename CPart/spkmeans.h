@@ -11,7 +11,6 @@
 #define NOT_INPUT_ERR "Invalid Input!"
 #define MAX_NUM_ITER 100
 #define EPSILON pow(10, -5)
-#define SIGN(x) x >= 0 ? 1 : -1
 
 #include <math.h>
 #include <string.h>
@@ -47,5 +46,5 @@ unsigned int isDiagonal(double ** mat, unsigned int n);
 void freeMat(double ** mat, unsigned int rows);
 unsigned int checkMatSymmetric(double ** mat, unsigned int rows, unsigned int cols);
 double convertToKDigits(double num, unsigned int k);
-
+unsigned int getSign(double num);
 #endif //CPART_SPKMEANS_H

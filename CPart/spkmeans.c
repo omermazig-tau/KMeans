@@ -25,7 +25,6 @@ int main(int argc, char ** argv) {
     x = createMatFromFile(f, shape);
     fclose(f);
     goal = argv[1];
-    spk(x, shape[0], shape[1], 2);
 
 
     if (strcmp(goal, goalOptions[0]) == 0) {
@@ -159,7 +158,6 @@ double ** jacobiAlgorithm(double ** mat, unsigned int n) {
     transP = transformSquaredMatrix(pMat, n);
     matForMulti = multiSquaredMatrices(transP, oldA, n);
     newA = multiSquaredMatrices(matForMulti, pMat, n);
-
     freeMat(transP, n);
     freeMat(matForMulti, n);
 
@@ -315,7 +313,7 @@ unsigned int * getIndexesValOffDiagSquaredMat(double ** mat, unsigned int n) {
     }
     for (i = 0; i < n; i++) {
         for (j = 0; j < n; j++) {
-            if (i != j && fabs(mat[i][j]) > max) {
+            if (i < j && fabs(mat[i][j]) > max) {
                 max = fabs(mat[i][j]);
                 indexMax[0] = i;
                 indexMax[1] = j;
@@ -337,7 +335,7 @@ double ** createMatrixP(double ** mat, unsigned int n) {
 
     pMat = getIdentityMat(n);
     theta = (mat[j][j] - mat[i][i]) / (2 * mat[i][j]);
-    t = SIGN(theta) / (fabs(theta) + sqrt(pow(theta, 2) + 1));
+    t = getSign(theta) / (fabs(theta) + sqrt(pow(theta, 2) + 1));
     c = 1 / sqrt(pow(t, 2) + 1);
     s = t * c;
     pMat[i][j] = s;
@@ -369,7 +367,7 @@ unsigned int isConvergenceDiag(double ** matNew, double ** matOld, unsigned int 
 
     sumOld = getSumSquaredOffDiagElement(matOld, n);
     sumNew = getSumSquaredOffDiagElement(matNew, n);
-    if (fabs(sumOld - sumNew) <= EPSILON) {
+    if (sumOld - sumNew <= EPSILON) {
         return TRUE;
     }
     return FALSE;
@@ -565,6 +563,14 @@ unsigned int checkMatSymmetric(double ** mat, unsigned int rows, unsigned int co
 
 double convertToKDigits(double num, unsigned int k) {
     return (double)((int)(num * pow(10, k) + .5)) / pow(10, k);
+}
+
+
+unsigned int getSign(double num) {
+    if(num >= 0) {
+        return 1;
+    }
+    return -1;
 }
 
 
