@@ -566,7 +566,7 @@ double convertToKDigits(double num, unsigned int k) {
 }
 
 
-unsigned int getSign(double num) {
+int getSign(double num) {
     if(num >= 0) {
         return 1;
     }

@@ -46,5 +46,5 @@ unsigned int isDiagonal(double ** mat, unsigned int n);
 void freeMat(double ** mat, unsigned int rows);
 unsigned int checkMatSymmetric(double ** mat, unsigned int rows, unsigned int cols);
 double convertToKDigits(double num, unsigned int k);
-unsigned int getSign(double num);
+int getSign(double num);
 #endif //CPART_SPKMEANS_H
