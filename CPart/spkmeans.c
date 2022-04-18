@@ -159,6 +159,7 @@ double ** jacobiAlgorithm(double ** mat, unsigned int n) {
     transP = transformSquaredMatrix(pMat, n);
     matForMulti = multiSquaredMatrices(transP, oldA, n);
     newA = multiSquaredMatrices(matForMulti, pMat, n);
+
     freeMat(transP, n);
     freeMat(matForMulti, n);
 
@@ -194,7 +195,7 @@ double ** jacobiAlgorithm(double ** mat, unsigned int n) {
 
 // Helpful methods
 
-double ** createZeroMatrix (unsigned int rows, unsigned int cols) {
+double ** createZeroMatrix(unsigned int rows, unsigned int cols) {
     unsigned int i;
     double ** mat;
 
@@ -278,6 +279,7 @@ double ** getPowMinusHalfDiagMat(double ** mat, unsigned int n) {
     return minusSquaredDiagMat;
 }
 
+
 double ** getIdentityMat(unsigned n) {
     double **iMat;
     unsigned int i;
@@ -323,6 +325,7 @@ unsigned int * getIndexesValOffDiagSquaredMat(double ** mat, unsigned int n) {
     return indexMax;
 }
 
+
 double ** createMatrixP(double ** mat, unsigned int n) {
     double ** pMat, s, t, c, theta;
     unsigned int * indexMax, i, j;
@@ -344,6 +347,7 @@ double ** createMatrixP(double ** mat, unsigned int n) {
     return pMat;
 }
 
+
 double getSumSquaredOffDiagElement(double ** mat, unsigned int n) {
     double sum;
     unsigned int i, j;
@@ -359,6 +363,7 @@ double getSumSquaredOffDiagElement(double ** mat, unsigned int n) {
     return sum;
 }
 
+
 unsigned int isConvergenceDiag(double ** matNew, double ** matOld, unsigned int n) {
     double sumOld, sumNew;
 
@@ -369,6 +374,7 @@ unsigned int isConvergenceDiag(double ** matNew, double ** matOld, unsigned int 
     }
     return FALSE;
 }
+
 
 double ** transformSquaredMatrix(double ** mat, unsigned int n) {
     double ** transMat;
@@ -383,6 +389,7 @@ double ** transformSquaredMatrix(double ** mat, unsigned int n) {
     return transMat;
 }
 
+
 double * getDiagSquaredMatrix(double ** mat, unsigned int n) {
     unsigned int i;
     double * diag;
@@ -393,6 +400,7 @@ double * getDiagSquaredMatrix(double ** mat, unsigned int n) {
     }
     return diag;
 }
+
 
 double ** addVectorFirstLineMatrix(double ** mat, const double * vector, unsigned int rowsMat, unsigned int cols) {
     double ** newMat;
@@ -409,7 +417,6 @@ double ** addVectorFirstLineMatrix(double ** mat, const double * vector, unsigne
     }
     return newMat;
 }
-
 
 
 unsigned int determineK(double * eigenValues, unsigned int n) {
@@ -452,6 +459,7 @@ double ** calcTMat(double ** uMat, unsigned int rows, unsigned int cols) {
     }
     return tMat;
 }
+
 
 unsigned int * getShapeMatrixFile(FILE * f) {
     unsigned int *shape, doneCol;
@@ -498,11 +506,13 @@ double ** createMatFromFile(FILE * f, const unsigned int * shape) {
     return mat;
 }
 
+
 void printMat(double ** mat, unsigned int rows, unsigned int cols) {
     unsigned int i, j;
+
     for (i = 0; i < rows; i++) {
         for (j = 0; j < cols; j++) {
-            if (mat[i][j] == 0)  { //Prevent printing of -0.0000
+            if (convertToKDigits(mat[i][j], 4) == 0)  { //Prevent printing of -0.0000
                 printf("%.4f", 0.0);
             }
             else {
@@ -552,6 +562,10 @@ unsigned int checkMatSymmetric(double ** mat, unsigned int rows, unsigned int co
     return TRUE;
 }
 
+
+double convertToKDigits(double num, unsigned int k) {
+    return (double)((int)(num * pow(10, k) + .5)) / pow(10, k);
+}
 
 
 
