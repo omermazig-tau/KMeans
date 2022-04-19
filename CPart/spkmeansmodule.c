@@ -1,6 +1,6 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
-#include "kmeans.c"
+#include "spkmeans.c"
 
 
 PyObject* getFlattenMatrixFromMatrix(double ** matrix, unsigned int rows, unsigned int cols) {
@@ -34,37 +34,28 @@ double ** getMatrixFromFlattenMatrix(PyObject* flattenMatrix, unsigned int rows,
     return matrix;
 }
 
-static PyObject* fit(PyObject *self, PyObject *args)
+static PyObject* get_weight_adjacency(PyObject *self, PyObject *args)
 {
-    unsigned int iterations;
     unsigned int rows;
     unsigned int cols;
-    unsigned int k;
-    double epsilon;
-    PyObject* flattenCentroids;
-    PyObject* flattenDataPoints;
+    PyObject* flattenMatrix;
 
-    unsigned int i;
-    unsigned int j;
-
-    if (!PyArg_ParseTuple(args, "iiiidOO", &iterations, &rows, &cols, &k, &epsilon, &flattenCentroids, &flattenDataPoints))
+    if (!PyArg_ParseTuple(args, "iiO", &rows, &cols, &flattenMatrix))
         return NULL;
 
-    double **centroids = getMatrixFromFlattenMatrix(flattenCentroids, k, cols);
-    double **dataPoints = getMatrixFromFlattenMatrix(flattenDataPoints, rows, cols);
+    double **matrix = getMatrixFromFlattenMatrix(flattenMatrix, rows, cols);
 
-    get_new_centroids(iterations, rows, cols, k, epsilon, dataPoints, centroids);
+    matrix = getWeightAdjacency(matrix, rows, cols);
 
-    PyObject* newFlattenCentroids = getFlattenMatrixFromMatrix(centroids, k, cols);
+    PyObject* newFlattenCentroids = getFlattenMatrixFromMatrix(matrix, rows, cols);
 
-    freeMatrixMemory(centroids, k);
-    freeMatrixMemory(dataPoints, rows);
+    freeMatrixMemory(matrix, rows);
 
     return newFlattenCentroids;
 }
 
 static PyMethodDef _methods[] = {
-    {"fit", (PyCFunction)fit, METH_VARARGS, PyDoc_STR("Don't know yet")},
+    {"get_weight_adjacency", (PyCFunction)get_weight_adjacency, METH_VARARGS, PyDoc_STR("Getting the weight adjacency matrix from a matrix")},
     {NULL, NULL, 0, NULL}   /* sentinel */
 };
 
