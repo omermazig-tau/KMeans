@@ -3,6 +3,37 @@
 #include "kmeans.c"
 
 
+PyObject* getFlattenMatrixFromMatrix(double ** matrix, unsigned int rows, unsigned int cols) {
+    unsigned int i;
+    unsigned int j;
+
+    PyObject* newFlattenMatrix = PyTuple_New(rows*cols);
+    if(newFlattenMatrix == NULL)
+        return NULL;
+
+    for(i = 0; i < rows; i++) {
+        for(j = 0; j < cols; j++) {
+            PyTuple_SetItem(newFlattenMatrix, j + i*cols, PyFloat_FromDouble(matrix[i][j]));
+        }
+    }
+
+    return newFlattenMatrix;
+}
+
+double ** getMatrixFromFlattenMatrix(PyObject* flattenMatrix, unsigned int rows, unsigned int cols) {
+    unsigned int i;
+    unsigned int j;
+    double **matrix = createMatrix(rows, cols);
+
+    for(i = 0; i < rows; i++) {
+        for(j = 0; j < cols; j++) {
+            matrix[i][j] = PyFloat_AsDouble(PyTuple_GetItem(flattenMatrix, j + i*cols));
+        }
+    }
+
+    return matrix;
+}
+
 static PyObject* fit(PyObject *self, PyObject *args)
 {
     unsigned int iterations;
@@ -12,39 +43,19 @@ static PyObject* fit(PyObject *self, PyObject *args)
     double epsilon;
     PyObject* flattenCentroids;
     PyObject* flattenDataPoints;
-    
+
     unsigned int i;
     unsigned int j;
 
     if (!PyArg_ParseTuple(args, "iiiidOO", &iterations, &rows, &cols, &k, &epsilon, &flattenCentroids, &flattenDataPoints))
         return NULL;
 
-    double **centroids = createMatrix(k, cols);
-    double **dataPoints = createMatrix(rows, cols);
-
-    for(i = 0; i < rows; i++) {
-        for(j = 0; j < cols; j++) {
-            dataPoints[i][j] = PyFloat_AsDouble(PyTuple_GetItem(flattenDataPoints, j + i*cols));
-        }
-    }
-
-    for(i = 0; i < k; i++) {
-        for(j = 0; j < cols; j++) {
-            centroids[i][j] = PyFloat_AsDouble(PyTuple_GetItem(flattenCentroids, j + i*cols));
-        }
-    }
+    double **centroids = getMatrixFromFlattenMatrix(flattenCentroids, k, cols);
+    double **dataPoints = getMatrixFromFlattenMatrix(flattenDataPoints, rows, cols);
 
     get_new_centroids(iterations, rows, cols, k, epsilon, dataPoints, centroids);
 
-    PyObject* newFlattenCentroids = PyTuple_New(k*cols);
-    if(newFlattenCentroids == NULL)
-        return NULL;
-
-    for(i = 0; i < k; i++) {
-        for(j = 0; j < cols; j++) {
-            PyTuple_SetItem(newFlattenCentroids, j + i*cols, PyFloat_FromDouble(centroids[i][j]));
-        }
-    }
+    PyObject* newFlattenCentroids = getFlattenMatrixFromMatrix(centroids, k, cols);
 
     freeMatrixMemory(centroids, k);
     freeMatrixMemory(dataPoints, rows);
