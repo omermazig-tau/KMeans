@@ -27,6 +27,7 @@ int main(int argc, char ** argv) {
     goal = argv[1];
 
 
+    //wam
     if (strcmp(goal, goalOptions[0]) == 0) {
         mat1 = getWeightAdjacency(x, shape[0], shape[1]);
         printMat(mat1, shape[0], shape[0]);
@@ -35,7 +36,8 @@ int main(int argc, char ** argv) {
         free(shape);
         return 0;
     }
-    if (strcmp(goal, goalOptions[1]) == 0) {
+    //ddg
+    else if (strcmp(goal, goalOptions[1]) == 0) {
         mat1 = getWeightAdjacency(x, shape[0], shape[1]);
         mat2 = getDiagonalDegreeMat(mat1, shape[0]);
         printMat(mat2, shape[0], shape[0]);
@@ -45,7 +47,8 @@ int main(int argc, char ** argv) {
         free(shape);
         return 0;
     }
-    if (strcmp(goal, goalOptions[2]) == 0) {
+    //lnorm
+    else if (strcmp(goal, goalOptions[2]) == 0) {
         mat1 = getWeightAdjacency(x, shape[0], shape[1]);
         mat2 = getDiagonalDegreeMat(mat1, shape[0]);
         mat3 = getNormalizedGraphLaplacian(mat1, mat2, shape[0]);
@@ -57,7 +60,8 @@ int main(int argc, char ** argv) {
         free(shape);
         return 0;
     }
-    if (strcmp(goal, goalOptions[3]) == 0) {
+    //jacobi
+    else if (strcmp(goal, goalOptions[3]) == 0) {
         if (shape[0] != shape[1] || !checkMatSymmetric(x, shape[0], shape[0])) { //Not symmetric of squared
             printf(INPUT_ERR);
             return 1;
@@ -69,8 +73,10 @@ int main(int argc, char ** argv) {
         free(shape);
         return 0;
     }
-    printf(INPUT_ERR);
-    return 1;
+    else {
+        printf(INPUT_ERR);
+        return 1;
+    }
 }
 
 double ** spk (double ** x, unsigned int rows, unsigned int cols, unsigned int k) {
