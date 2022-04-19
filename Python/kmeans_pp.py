@@ -7,6 +7,7 @@ import pandas as pd
 import os
 
 from Python import mykmeanssp
+from Python.common import print_matrix
 
 DEFAULT_ITERATIONS_NUMBER = 300
 
@@ -117,8 +118,7 @@ def get_list_of_initial_centroids(k, data_points):
 
 def print_output(list_centroids, list_index):
     print(*[list_index], sep=",")
-    for centroid in list_centroids:
-        print(*[f"{i:.4f}".rstrip('0') for i in centroid], sep=",")
+    print_matrix(list_centroids)
 
 
 if __name__ == '__main__':
