@@ -19,6 +19,11 @@ def parse_command_line():
     return k, goal, file_name
 
 
+def is_matrix_symmetrical(matrix):
+    # TODO - Implement once we figure out what format is the matrix (numpy or List[List[float]])
+    return True
+
+
 def main():
     try:
         try:
@@ -42,8 +47,10 @@ def main():
         elif goal == 'lnorm':
             flatten_matrix_result = spkmeans_api.get_normalized_graph_laplacian(rows, cols, flatten_matrix)
         elif goal == 'jacobi':
-            # TODO - Decide where to check if matrix is symmetrical
-            flatten_matrix_result = spkmeans_api.get_jacobi_matrix(rows, flatten_matrix)
+            if is_matrix_symmetrical(matrix):
+                flatten_matrix_result = spkmeans_api.get_jacobi_matrix(rows, flatten_matrix)
+            else:
+                raise ValueError('An unsymmetrical matrix has been passed to Jacobi algorithm')
         else:
             # TODO - remove the raise before submission
             raise ValueError
