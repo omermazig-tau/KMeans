@@ -67,8 +67,8 @@ void copyArrayIntoArray(double **arrayToChange, double **arrayToCopy, unsigned i
 }
 
 double ** initialize_centroids(unsigned int rows, unsigned int cols, unsigned int k, FILE *f, double **dataPoints) {
-    int i;
-    int j;
+    unsigned int i;
+    unsigned int j;
     double **centroids = createMatrix(k, cols);
     for(i = 0; i < rows; i++) {
         for(j = 0; j < cols; j++) {
@@ -137,8 +137,8 @@ void get_new_centroids(unsigned int iterations, unsigned int rows, unsigned int 
 
 void write_output_to_file(char *output_file, unsigned int k, unsigned int cols, double **centroids) {
     FILE *f;
-    int i;
-    int j;
+    unsigned int i;
+    unsigned int j;
     f = fopen(output_file, "w");
     if(f) {
         for (i = 0; i < k; i++) {
