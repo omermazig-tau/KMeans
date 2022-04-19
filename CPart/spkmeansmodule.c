@@ -34,7 +34,7 @@ double ** getMatrixFromFlattenMatrix(PyObject* flattenMatrix, unsigned int rows,
     return matrix;
 }
 
-static PyObject* get_weight_adjacency(PyObject *self, PyObject *args)
+static PyObject* get_weight_adjacency_matrix(PyObject *self, PyObject *args)
 {
     unsigned int rows;
     unsigned int cols;
@@ -47,15 +47,85 @@ static PyObject* get_weight_adjacency(PyObject *self, PyObject *args)
 
     matrix = getWeightAdjacency(matrix, rows, cols);
 
-    PyObject* newFlattenCentroids = getFlattenMatrixFromMatrix(matrix, rows, cols);
+    PyObject* newFlattenMatrix = getFlattenMatrixFromMatrix(matrix, rows, cols);
 
     freeMatrixMemory(matrix, rows);
 
-    return newFlattenCentroids;
+    return newFlattenMatrix;
+}
+
+static PyObject* get_diagonal_degree_matrix(PyObject *self, PyObject *args)
+{
+    unsigned int rows;
+    unsigned int cols;
+    PyObject* flattenMatrix;
+
+    if (!PyArg_ParseTuple(args, "iiO", &rows, &cols, &flattenMatrix))
+        return NULL;
+
+    double **matrix = getMatrixFromFlattenMatrix(flattenMatrix, rows, cols);
+
+    matrix = getWeightAdjacency(matrix, rows, cols);
+
+    matrix = getDiagonalDegreeMat(matrix, rows);
+
+    PyObject* newFlattenMatrix = getFlattenMatrixFromMatrix(matrix, rows, cols);
+
+    freeMatrixMemory(matrix, rows);
+
+    return newFlattenMatrix;
+}
+
+static PyObject* get_normalized_graph_laplacian(PyObject *self, PyObject *args)
+{
+    unsigned int rows;
+    unsigned int cols;
+    PyObject* flattenMatrix;
+
+    if (!PyArg_ParseTuple(args, "iiO", &rows, &cols, &flattenMatrix))
+        return NULL;
+
+    double **matrix = getMatrixFromFlattenMatrix(flattenMatrix, rows, cols);
+    double **matrix2;
+
+    matrix = getWeightAdjacency(matrix, rows, cols);
+
+    matrix2 = getDiagonalDegreeMat(matrix, rows);
+
+    matrix = getNormalizedGraphLaplacian(matrix, matrix2, rows);
+
+    PyObject* newFlattenMatrix = getFlattenMatrixFromMatrix(matrix, rows, cols);
+
+    freeMatrixMemory(matrix, rows);
+    freeMatrixMemory(matrix2, rows);
+
+    return newFlattenMatrix;
+}
+
+static PyObject* get_jacobi_matrix(PyObject *self, PyObject *args)
+{
+    unsigned int n;
+    PyObject* flattenMatrix;
+
+    if (!PyArg_ParseTuple(args, "iO", &n, &flattenMatrix))
+        return NULL;
+
+    double **matrix = getMatrixFromFlattenMatrix(flattenMatrix, n, n);
+
+    matrix = jacobiAlgorithm(matrix, n);
+
+    PyObject* newFlattenMatrix = getFlattenMatrixFromMatrix(matrix, n, n);
+
+    freeMatrixMemory(matrix, n);
+
+    return newFlattenMatrix;
 }
 
 static PyMethodDef _methods[] = {
-    {"get_weight_adjacency", (PyCFunction)get_weight_adjacency, METH_VARARGS, PyDoc_STR("Getting the weight adjacency matrix from a matrix")},
+    {"get_weight_adjacency_matrix", (PyCFunction)get_weight_adjacency_matrix, METH_VARARGS, PyDoc_STR("Getting the Weight Adjacency matrix from a matrix")},
+    {"get_diagonal_degree_matrix", (PyCFunction)get_diagonal_degree_matrix, METH_VARARGS, PyDoc_STR("Getting the Diagonal Degree matrix from a matrix")},
+    {"get_normalized_graph_laplacian", (PyCFunction)get_normalized_graph_laplacian, METH_VARARGS, PyDoc_STR("Getting the Normalized graph laplacian matrix from a matrix")},
+    {"get_jacobi_matrix", (PyCFunction)get_jacobi_matrix, METH_VARARGS, PyDoc_STR("Getting the matrix after jacobi algorithm")},
     {NULL, NULL, 0, NULL}   /* sentinel */
 };
 

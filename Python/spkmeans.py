@@ -33,9 +33,19 @@ def main():
         cols = len(matrix[0])
         flatten_matrix = tuple(itertools.chain.from_iterable(matrix))
 
-        if goal == 'wam':
-            flatten_matrix_result = spkmeans_api.get_weight_adjacency(rows, cols, flatten_matrix)
+        if goal == 'spk':
+            flatten_matrix_result = spkmeans_api.get_weight_adjacency_matrix(rows, cols, flatten_matrix)
+        elif goal == 'wam':
+            flatten_matrix_result = spkmeans_api.get_weight_adjacency_matrix(rows, cols, flatten_matrix)
+        elif goal == 'ddg':
+            flatten_matrix_result = spkmeans_api.get_diagonal_degree_matrix(rows, cols, flatten_matrix)
+        elif goal == 'lnorm':
+            flatten_matrix_result = spkmeans_api.get_normalized_graph_laplacian(rows, cols, flatten_matrix)
+        elif goal == 'jacobi':
+            # TODO - Decide where to check if matrix is symmetrical
+            flatten_matrix_result = spkmeans_api.get_jacobi_matrix(rows, flatten_matrix)
         else:
+            # TODO - remove the raise before submission
             raise ValueError
 
         matrix_result = get_matrix_from_flattened_list(rows, cols, flatten_matrix_result)
