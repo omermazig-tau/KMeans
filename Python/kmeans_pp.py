@@ -39,16 +39,7 @@ def _get_centroids_from_c(data_points, initial_centroids, iterations, k, epsilon
     return get_matrix_from_flattened_list(k, cols, flatten_centroids)
 
 
-def apply_kmeans_pp(k, iterations, epsilon, filepath1, filepath2):
-    data_points_1 = pd.read_csv(filepath1, header=None, index_col=0)
-    data_points_1.index.names = ['INDEX']
-    data_points_2 = pd.read_csv(filepath2, header=None, index_col=0)
-    data_points_2.index.names = ['INDEX']
-
-    if k > len(data_points_1) + len(data_points_2):
-        raise ValueError("Number of clusters can't be higher than number of points")
-
-    data_points = pd.merge(data_points_1, data_points_2, on='INDEX', how='inner')
+def apply_kmeans_pp(k, iterations, epsilon, data_points):
     initial_centroids_indexes, initial_centroids = get_list_of_initial_centroids(k, data_points.copy())
     if iterations == 0:
         return initial_centroids, initial_centroids_indexes
@@ -56,6 +47,16 @@ def apply_kmeans_pp(k, iterations, epsilon, filepath1, filepath2):
         data_points = data_points.to_numpy().tolist()
         centroids = _get_centroids_from_c(data_points, initial_centroids, iterations, k, epsilon)
         return centroids, initial_centroids_indexes
+
+
+def get_data_points_from_two_files(filepath1, filepath2):
+    data_points_1 = pd.read_csv(filepath1, header=None, index_col=0)
+    data_points_1.index.names = ['INDEX']
+    data_points_2 = pd.read_csv(filepath2, header=None, index_col=0)
+    data_points_2.index.names = ['INDEX']
+
+    data_points = pd.merge(data_points_1, data_points_2, on='INDEX', how='inner')
+    return data_points
 
 
 def main():
@@ -73,7 +74,10 @@ def main():
         if k == 0:
             centroids, initial_centroids_indexes = [], []
         else:
-            centroids, initial_centroids_indexes = apply_kmeans_pp(k, iterations, epsilon, filepath1, filepath2)
+            data_points = get_data_points_from_two_files(filepath1, filepath2)
+            if k > len(data_points):
+                raise ValueError("Number of clusters can't be higher than number of points")
+            centroids, initial_centroids_indexes = apply_kmeans_pp(k, iterations, epsilon, data_points)
         print_output(centroids, initial_centroids_indexes)
 
     except:

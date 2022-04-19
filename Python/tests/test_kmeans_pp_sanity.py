@@ -4,7 +4,7 @@ from typing import Tuple, List
 
 import pytest
 
-from Python.kmeans_pp import DEFAULT_ITERATIONS_NUMBER, apply_kmeans_pp
+from Python.kmeans_pp import DEFAULT_ITERATIONS_NUMBER, apply_kmeans_pp, get_data_points_from_two_files
 
 
 def read_date_from_file(filepath: str) -> List[Tuple[float]]:
@@ -28,7 +28,8 @@ def test_sanity_original_examples(k, iterations, i, epsilon):
     input_path_1 = os.path.join(base_folder, f"input_{i}_db_1.txt")
     input_path_2 = os.path.join(base_folder, f"input_{i}_db_2.txt")
     output_path = os.path.join(base_folder, f"output_{i}.txt")
-    centroids, initial_centroids_indexes = apply_kmeans_pp(k, iterations, epsilon, input_path_1, input_path_2)
+    data_points = get_data_points_from_two_files(input_path_1, input_path_2)
+    centroids, initial_centroids_indexes = apply_kmeans_pp(k, iterations, epsilon, data_points)
     get_and_assert_new_centroids(centroids, initial_centroids_indexes, output_path, epsilon)
 
 
