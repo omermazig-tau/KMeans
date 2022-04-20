@@ -121,6 +121,54 @@ static PyObject* get_jacobi_matrix(PyObject *self, PyObject *args)
     return newFlattenMatrix;
 }
 
+static PyObject* get_spk_matrix(PyObject *self, PyObject *args) {
+    unsigned int rows;
+    unsigned int cols;
+    unsigned int k;
+    PyObject* flattenMatrix;
+
+    if (!PyArg_ParseTuple(args, "iiiO", &rows, &cols, &k, &flattenMatrix))
+        return NULL;
+
+    double **x = getMatrixFromFlattenMatrix(flattenMatrix, rows, cols);
+
+    //From here - Roe's part
+
+    double **mat1, **mat2, **mat3, **mat4, **mat5, **tMat;
+
+    mat1 = getWeightAdjacency(x, rows, cols);
+    mat2 = getDiagonalDegreeMat(mat1, rows);
+    mat3 = getNormalizedGraphLaplacian(mat1, mat2, rows);
+    mat4 = jacobiAlgorithm(mat3, rows);
+
+    if (k == 0) {
+        mat5 = mat4;
+        k = determineK(mat4[0], rows);
+        if (k == 1) {
+            //TODO - Omer - need to find a different way to do alert the error here
+            printf(NOT_INPUT_ERR);
+            exit(1);
+        }
+        mat4 = getKFirstEigenvectors(mat4, rows, k);
+        freeMatrixMemory(mat5, rows);
+    }
+    freeMatrixMemory(mat1, rows);
+    freeMatrixMemory(mat2, rows);
+    freeMatrixMemory(mat3, rows);
+    freeMatrixMemory(mat4, rows);
+
+    //TODO - Roe - If you freed mat4, how can you use it here?
+    tMat = calcTMat(mat4+1, rows, k);
+
+    //Until here - Roe's part
+
+    PyObject* newFlattenMatrix = getFlattenMatrixFromMatrix(matrix, n, k);
+
+    freeMatrixMemory(matrix, n);
+
+    return newFlattenMatrix;
+}
+
 static PyMethodDef _methods[] = {
     {"get_weight_adjacency_matrix", (PyCFunction)get_weight_adjacency_matrix, METH_VARARGS, PyDoc_STR("Getting the Weight Adjacency matrix from a matrix")},
     {"get_diagonal_degree_matrix", (PyCFunction)get_diagonal_degree_matrix, METH_VARARGS, PyDoc_STR("Getting the Diagonal Degree matrix from a matrix")},

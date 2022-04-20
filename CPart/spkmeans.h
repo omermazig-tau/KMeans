@@ -17,7 +17,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-double ** spk (double ** x, unsigned int rows, unsigned int cols, unsigned int k);
 double ** getWeightAdjacency(double ** x, unsigned int n, unsigned int d);
 double ** getDiagonalDegreeMat(double ** weights, unsigned int n);
 double ** getNormalizedGraphLaplacian(double ** weights, double ** diagDegreeMat, unsigned int n);

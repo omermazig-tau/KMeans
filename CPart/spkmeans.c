@@ -80,34 +80,6 @@ int main(int argc, char ** argv) {
     }
 }
 
-double ** spk (double ** x, unsigned int rows, unsigned int cols, unsigned int k) {
-    double **mat1, **mat2, **mat3, **mat4, **mat5, **tMat;
-
-    mat1 = getWeightAdjacency(x, rows, cols);
-    mat2 = getDiagonalDegreeMat(mat1, rows);
-    mat3 = getNormalizedGraphLaplacian(mat1, mat2, rows);
-    mat4 = jacobiAlgorithm(mat3, rows);
-
-    if (k == 0) {
-        mat5 = mat4;
-        k = determineK(mat4[0], rows);
-        if (k == 1) {
-            printf(NOT_INPUT_ERR);
-            exit(1);
-        }
-        mat4 = getKFirstEigenvectors(mat4, rows, k);
-        freeMatrixMemory(mat5, rows);
-    }
-    freeMatrixMemory(mat1, rows);
-    freeMatrixMemory(mat2, rows);
-    freeMatrixMemory(mat3, rows);
-    freeMatrixMemory(mat4, rows);
-
-    tMat =  calcTMat(mat4+1, rows, k);
-    return tMat;
-}
-
-
 double ** getWeightAdjacency(double ** x, unsigned int n, unsigned int d) {
     unsigned int i, j;
     double ** weights;
