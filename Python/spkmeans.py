@@ -1,9 +1,8 @@
 import itertools
-import os
 import sys
 
 from Python.common import print_matrix, get_matrix_from_flattened_list
-from Python.kmeans_pp import apply_kmeans_pp
+from Python.kmeans_pp import apply_kmeans_pp, print_output
 from Python import spkmeans_api
 
 
@@ -39,24 +38,30 @@ def main():
         flatten_matrix = tuple(itertools.chain.from_iterable(matrix))
 
         if goal == 'spk':
-            flatten_matrix_result = spkmeans_api.get_weight_adjacency_matrix(rows, cols, flatten_matrix)
-        elif goal == 'wam':
-            flatten_matrix_result = spkmeans_api.get_weight_adjacency_matrix(rows, cols, flatten_matrix)
-        elif goal == 'ddg':
-            flatten_matrix_result = spkmeans_api.get_diagonal_degree_matrix(rows, cols, flatten_matrix)
-        elif goal == 'lnorm':
-            flatten_matrix_result = spkmeans_api.get_normalized_graph_laplacian(rows, cols, flatten_matrix)
-        elif goal == 'jacobi':
-            if is_matrix_symmetrical(matrix):
-                flatten_matrix_result = spkmeans_api.get_jacobi_matrix(rows, flatten_matrix)
-            else:
-                raise ValueError('An unsymmetrical matrix has been passed to Jacobi algorithm')
-        else:
-            # TODO - remove the raise before submission
-            raise ValueError
+            flatten_matrix_result = spkmeans_api.get_spk_matrix(rows, cols, k, flatten_matrix)
+            k = len(flatten_matrix_result) / rows
+            matrix_result = get_matrix_from_flattened_list(rows, k, flatten_matrix_result)
+            centroids, initial_centroids_indexes = apply_kmeans_pp(k, DEFAULT_ITERATIONS_NUMBER, 0.0, matrix_result)
+            print_output(centroids, initial_centroids_indexes)
 
-        matrix_result = get_matrix_from_flattened_list(rows, cols, flatten_matrix_result)
-        print_matrix(matrix_result)
+        else:
+            if goal == 'wam':
+                flatten_matrix_result = spkmeans_api.get_weight_adjacency_matrix(rows, cols, flatten_matrix)
+            elif goal == 'ddg':
+                flatten_matrix_result = spkmeans_api.get_diagonal_degree_matrix(rows, cols, flatten_matrix)
+            elif goal == 'lnorm':
+                flatten_matrix_result = spkmeans_api.get_normalized_graph_laplacian(rows, cols, flatten_matrix)
+            elif goal == 'jacobi':
+                if is_matrix_symmetrical(matrix):
+                    flatten_matrix_result = spkmeans_api.get_jacobi_matrix(rows, flatten_matrix)
+                else:
+                    raise ValueError('An unsymmetrical matrix has been passed to Jacobi algorithm')
+            else:
+                # TODO - remove the raise before submission
+                raise ValueError
+
+            matrix_result = get_matrix_from_flattened_list(rows, cols, flatten_matrix_result)
+            print_matrix(matrix_result)
 
     except Exception as e:
         print("An Error Has Occurred")
