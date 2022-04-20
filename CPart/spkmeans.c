@@ -414,7 +414,6 @@ unsigned int determineK(double * eigenValues, unsigned int n) {
 
 
 double ** getKFirstEigenvectors(double * eigenValues, double ** eigenVectors, unsigned int n, unsigned int k) {
-    //return createCopyMat(eigenVectors, n, k);
     unsigned int * indices, i, j;
     double **firstKEigenVectors;
 
@@ -425,6 +424,7 @@ double ** getKFirstEigenvectors(double * eigenValues, double ** eigenVectors, un
             firstKEigenVectors[i][j] = eigenVectors[indices[i]][j];
         }
     }
+    free(indices);
     return firstKEigenVectors;
 }
 
