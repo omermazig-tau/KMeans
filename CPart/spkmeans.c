@@ -2,7 +2,6 @@
 // Created by roydd on 4/13/2022.
 //
 #include "spkmeans.h"
-#include "kmeans.c"
 
 //Core methods
 int main(int argc, char ** argv) {
@@ -32,8 +31,8 @@ int main(int argc, char ** argv) {
     if (strcmp(goal, goalOptions[0]) == 0) {
         mat1 = getWeightAdjacency(x, shape[0], shape[1]);
         printMat(mat1, shape[0], shape[0]);
-        freeMatrixMemory(mat1, shape[0]);
-        freeMatrixMemory(x, shape[0]);
+        freeMat(mat1, shape[0]);
+        freeMat(x, shape[0]);
         free(shape);
         return 0;
     }
@@ -42,9 +41,9 @@ int main(int argc, char ** argv) {
         mat1 = getWeightAdjacency(x, shape[0], shape[1]);
         mat2 = getDiagonalDegreeMat(mat1, shape[0]);
         printMat(mat2, shape[0], shape[0]);
-        freeMatrixMemory(mat1, shape[0]);
-        freeMatrixMemory(mat2, shape[0]);
-        freeMatrixMemory(x, shape[0]);
+        freeMat(mat1, shape[0]);
+        freeMat(mat2, shape[0]);
+        freeMat(x, shape[0]);
         free(shape);
         return 0;
     }
@@ -54,10 +53,10 @@ int main(int argc, char ** argv) {
         mat2 = getDiagonalDegreeMat(mat1, shape[0]);
         mat3 = getNormalizedGraphLaplacian(mat1, mat2, shape[0]);
         printMat(mat3, shape[0], shape[0]);
-        freeMatrixMemory(mat1, shape[0]);
-        freeMatrixMemory(mat2, shape[0]);
-        freeMatrixMemory(mat3, shape[0]);
-        freeMatrixMemory(x, shape[0]);
+        freeMat(mat1, shape[0]);
+        freeMat(mat2, shape[0]);
+        freeMat(mat3, shape[0]);
+        freeMat(x, shape[0]);
         free(shape);
         return 0;
     }
@@ -69,8 +68,8 @@ int main(int argc, char ** argv) {
         }
         mat1 = jacobiAlgorithm(x, shape[0]);
         printMat(mat1, shape[0] + 1, shape[0]);
-        freeMatrixMemory(mat1, shape[0]);
-        freeMatrixMemory(x, shape[0]);
+        freeMat(mat1, shape[0]);
+        freeMat(x, shape[0]);
         free(shape);
         return 0;
     }
@@ -120,9 +119,9 @@ double ** getNormalizedGraphLaplacian(double ** weights, double ** diagDegreeMat
     mat3 = multiSquaredMatrices(powMinusHalfD, weights, n);
     mat2 = multiSquaredMatrices(mat3, powMinusHalfD, n);
     NormalizedGraphLaplacian = subtractSquaredMatrices(mat1, mat2, n);
-    freeMatrixMemory(mat1, n);
-    freeMatrixMemory(mat2, n);
-    freeMatrixMemory(mat3, n);
+    freeMat(mat1, n);
+    freeMat(mat2, n);
+    freeMat(mat3, n);
     return NormalizedGraphLaplacian;
 }
 
@@ -137,34 +136,34 @@ double ** jacobiAlgorithm(double ** mat, unsigned int n) {
     transP = transformSquaredMatrix(pMat, n);
     matForMulti = multiSquaredMatrices(transP, oldA, n);
     newA = multiSquaredMatrices(matForMulti, pMat, n);
-    freeMatrixMemory(transP, n);
-    freeMatrixMemory(matForMulti, n);
+    freeMat(transP, n);
+    freeMat(matForMulti, n);
 
     while (!(isConvergenceDiag(newA, oldA, n)) && iter < MAX_NUM_ITER && !(isDiagonal(newA, n))) {
         iter++;
-        freeMatrixMemory(oldA, n);
+        freeMat(oldA, n);
         oldA = newA;
-        freeMatrixMemory(pMat, n);
+        freeMat(pMat, n);
         pMat = createMatrixP(oldA, n);
 
         oldVMat = vMat;
         vMat = multiSquaredMatrices(vMat, pMat, n);
-        freeMatrixMemory(oldVMat, n);
+        freeMat(oldVMat, n);
 
         transP = transformSquaredMatrix(pMat, n);
         matForMulti = multiSquaredMatrices(transP, oldA, n);
         newA = multiSquaredMatrices(matForMulti, pMat, n);
-        freeMatrixMemory(transP, n);
-        freeMatrixMemory(matForMulti, n);
+        freeMat(transP, n);
+        freeMat(matForMulti, n);
     }
 
-    freeMatrixMemory(oldA, n);
+    freeMat(oldA, n);
     eigenValues = getDiagSquaredMatrix(newA, n);
     eigenVectors = vMat;
     returnedMat = addVectorFirstLineMatrix(eigenVectors, eigenValues, n, n);
 
     free(eigenValues);
-    freeMatrixMemory(eigenVectors, n);
+    freeMat(eigenVectors, n);
     return returnedMat;
 }
 
@@ -526,6 +525,15 @@ unsigned int isDiagonal(double ** mat, unsigned int n) {
         }
     }
     return TRUE;
+}
+
+void freeMat(double ** mat, unsigned int rows){
+    unsigned int i;
+
+    for (i = 0; i < rows; i++) {
+        free(mat[i]);
+    }
+    free(mat);
 }
 
 unsigned int checkMatSymmetric(double ** mat, unsigned int rows, unsigned int cols) {
