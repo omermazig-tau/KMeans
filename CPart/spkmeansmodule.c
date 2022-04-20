@@ -162,9 +162,9 @@ static PyObject* get_spk_matrix(PyObject *self, PyObject *args) {
 
     //Until here - Roe's part
 
-    PyObject* newFlattenMatrix = getFlattenMatrixFromMatrix(matrix, n, k);
+    PyObject* newFlattenMatrix = getFlattenMatrixFromMatrix(tMat, rows, k);
 
-    freeMatrixMemory(matrix, n);
+    freeMatrixMemory(tMat, rows);
 
     return newFlattenMatrix;
 }
