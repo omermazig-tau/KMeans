@@ -17,6 +17,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
+typedef struct Pair {
+    unsigned int index;
+    double value;
+} Pair;
 double ** getWeightAdjacency(double ** x, unsigned int n, unsigned int d);
 double ** getDiagonalDegreeMat(double ** weights, unsigned int n);
 double ** getNormalizedGraphLaplacian(double ** weights, double ** diagDegreeMat, unsigned int n);
@@ -36,7 +41,7 @@ double ** transformSquaredMatrix(double ** mat, unsigned int n);
 double * getDiagSquaredMatrix(double ** mat, unsigned int n);
 double ** addVectorFirstLineMatrix(double ** mat, const double * vector, unsigned int rowsMat, unsigned int cols);
 unsigned int determineK(double * eigenValues, unsigned int n);
-double ** getKFirstEigenvectors(double ** eigenVectors, unsigned int n, unsigned int k);
+double ** getKFirstEigenvectors(double * eigenValues, double ** eigenVectors, unsigned int n, unsigned int k);
 double ** calcTMat(double ** uMat, unsigned int rows, unsigned int cols);
 unsigned int * getShapeMatrixFile(FILE * f);
 double ** createMatFromFile(FILE * f, const unsigned int * shape);
@@ -46,4 +51,6 @@ void freeMat(double ** mat, unsigned int rows);
 unsigned int checkMatSymmetric(double ** mat, unsigned int rows, unsigned int cols);
 double convertToKDigits(double num, unsigned int k);
 int getSign(double num);
+int cmp(const void *a, const void *b);
+unsigned int * getSortedIndex(const double * arr, unsigned len);
 #endif //CPART_SPKMEANS_H

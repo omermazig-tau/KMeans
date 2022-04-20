@@ -414,8 +414,19 @@ unsigned int determineK(double * eigenValues, unsigned int n) {
 }
 
 
-double ** getKFirstEigenvectors(double ** eigenVectors, unsigned int n, unsigned int k) {
-    return createCopyMat(eigenVectors, n, k);
+double ** getKFirstEigenvectors(double * eigenValues, double ** eigenVectors, unsigned int n, unsigned int k) {
+    //return createCopyMat(eigenVectors, n, k);
+    unsigned int * indices, i, j;
+    double **firstKEigenVectors;
+
+    indices = getSortedIndex(eigenValues, n);
+    firstKEigenVectors = createZeroMatrix(n, k);
+    for (i = 0; i < n; i++) {
+        for (j = 0; j < k; j++) {
+            firstKEigenVectors[i][j] = eigenVectors[indices[i]][j];
+        }
+    }
+    return firstKEigenVectors;
 }
 
 
@@ -543,5 +554,42 @@ int getSign(double num) {
     return -1;
 }
 
+
+int cmp(const void *a, const void *b)
+{
+    struct Pair *a1 = (struct Pair *)a;
+    struct Pair *a2 = (struct Pair *)b;
+    if ((*a1).value > (*a2).value)
+        return -1;
+    else if ((*a1).value < (*a2).value)
+        return 1;
+    else
+        return 0;
+}
+
+
+unsigned int * getSortedIndex(const double * arr, unsigned len) {
+    Pair *pairArr;
+    unsigned int * sortedIndices;
+    unsigned int i;
+
+    pairArr = malloc(sizeof(*pairArr) * len);
+    sortedIndices = malloc(sizeof(unsigned int) * len);
+
+    if(!pairArr || !sortedIndices) {
+        printf(NOT_INPUT_ERR);
+        exit(1);
+    }
+    for (i = 0; i < len ; i++) {
+        pairArr[i].value = arr[i];
+        pairArr[i].index = i;
+    }
+    qsort(pairArr, len, sizeof(pairArr[0]), cmp);
+    for (i = 0; i < len; i++) {
+        sortedIndices[i] = pairArr[i].index;
+    }
+    free(pairArr);
+    return sortedIndices;
+}
 
 

@@ -149,16 +149,15 @@ static PyObject* get_spk_matrix(PyObject *self, PyObject *args) {
             printf(NOT_INPUT_ERR);
             exit(1);
         }
-        mat4 = getKFirstEigenvectors(mat4, rows, k);
+        mat4 = getKFirstEigenvectors(mat4[0], mat4+1, rows, k);
         freeMatrixMemory(mat5, rows);
     }
     freeMatrixMemory(mat1, rows);
     freeMatrixMemory(mat2, rows);
     freeMatrixMemory(mat3, rows);
-    freeMatrixMemory(mat4, rows);
 
-    //TODO - Roe - If you freed mat4, how can you use it here?
     tMat = calcTMat(mat4+1, rows, k);
+    freeMatrixMemory(mat4, rows);
 
     //Until here - Roe's part
 
