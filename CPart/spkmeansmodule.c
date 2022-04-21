@@ -150,22 +150,21 @@ static PyObject* get_spk_matrix(PyObject *self, PyObject *args) {
     mat4 = jacobiAlgorithm(mat3, rows);
 
     if (k == 0) {
-        mat5 = mat4;
         k = determineK(mat4[0], rows);
         if (k == 1) {
             //TODO - Omer - need to find a different way to do alert the error here
             printf(NOT_INPUT_ERR);
             exit(1);
         }
-        mat4 = getKFirstEigenvectors(mat4[0], mat4+1, rows, k);
-        freeMatrixMemory(mat5, rows);
     }
+    mat5 = getKFirstEigenvectors(mat4[0], mat4 + 1, rows, k);
+    tMat = calcTMat(mat5, rows, k);
+
     freeMatrixMemory(mat1, rows);
     freeMatrixMemory(mat2, rows);
     freeMatrixMemory(mat3, rows);
-
-    tMat = calcTMat(mat4+1, rows, k);
-    freeMatrixMemory(mat4, rows);
+    freeMatrixMemory(mat4, rows + 1);
+    freeMatrixMemory(mat5, rows);
 
     //Until here - Roe's part
 
