@@ -16,8 +16,20 @@ def compare_data_points(data_point, other_data_point, epsilon):
 
 
 @pytest.mark.parametrize("i", range(10))
-@pytest.mark.parametrize("goal", ['wam', 'ddg', 'lnorm', 'jacobi'])
+@pytest.mark.parametrize("goal", ['wam', 'ddg', 'lnorm'])
 def test_specific_goal_sanity(i, goal):
+    input_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)), "spkmeans_files")
+    output_folder = os.path.join(input_folder, 'outputs', 'py', goal)
+    file_prefix = 'jacobi' if goal == 'jacobi' else 'spk'
+    file_name = f"{file_prefix}_{i}.txt"
+    input_filepath = os.path.join(input_folder, file_name)
+    output_filepath = os.path.join(output_folder, file_name)
+    get_and_assert_matrix_result(goal, input_filepath, output_filepath)
+
+
+@pytest.mark.parametrize("i", range(22))
+def test_jacobi_sanity(i):
+    goal = 'jacobi'
     input_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)), "spkmeans_files")
     output_folder = os.path.join(input_folder, 'outputs', 'py', goal)
     file_prefix = 'jacobi' if goal == 'jacobi' else 'spk'
