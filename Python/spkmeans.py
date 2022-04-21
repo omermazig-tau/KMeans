@@ -3,6 +3,7 @@ import sys
 
 from Python.common import print_matrix, get_matrix_from_flattened_list
 from Python.kmeans_pp import apply_kmeans_pp, print_output
+from Python.kmeans import read_date_from_file
 from Python import spkmeans_api
 
 
@@ -26,13 +27,12 @@ def is_matrix_symmetrical(matrix):
 def main():
     try:
         try:
-            k, goal, file_name = parse_command_line()
+            k, goal, file_path = parse_command_line()
         except ValueError:
             print("Invalid Input!")
             return
 
-        with open(file_name, 'r') as _file:
-            matrix = [[float(num) for num in line.split(',')] for line in _file]
+        matrix = read_date_from_file(file_path)
         rows = len(matrix)
         cols = len(matrix[0])
         flatten_matrix = tuple(itertools.chain.from_iterable(matrix))
