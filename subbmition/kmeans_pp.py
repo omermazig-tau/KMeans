@@ -6,7 +6,8 @@ import numpy as np
 import pandas as pd
 import os
 
-import mykmeanssp
+from Python import mykmeanssp
+from Python.common import print_matrix, get_matrix_from_flattened_list
 
 DEFAULT_ITERATIONS_NUMBER = 300
 
@@ -38,26 +39,7 @@ def _get_centroids_from_c(data_points, initial_centroids, iterations, k, epsilon
     return get_matrix_from_flattened_list(k, cols, flatten_centroids)
 
 
-def get_matrix_from_flattened_list(k, cols, flatten_centroids: List[float]):
-    matrix = []
-    for i in range(k):
-        temp = []
-        for j in range(cols):
-            temp.append(flatten_centroids[j + i * cols])
-        matrix.append(temp)
-    return matrix
-
-
-def apply_kmeans_pp(k, iterations, epsilon, filepath1, filepath2):
-    data_points_1 = pd.read_csv(filepath1, header=None, index_col=0)
-    data_points_1.index.names = ['INDEX']
-    data_points_2 = pd.read_csv(filepath2, header=None, index_col=0)
-    data_points_2.index.names = ['INDEX']
-
-    if k > len(data_points_1) + len(data_points_2):
-        raise ValueError("Number of clusters can't be higher than number of points")
-
-    data_points = pd.merge(data_points_1, data_points_2, on='INDEX', how='inner')
+def apply_kmeans_pp(k, iterations, epsilon, data_points):
     initial_centroids_indexes, initial_centroids = get_list_of_initial_centroids(k, data_points.copy())
     if iterations == 0:
         return initial_centroids, initial_centroids_indexes
@@ -65,6 +47,16 @@ def apply_kmeans_pp(k, iterations, epsilon, filepath1, filepath2):
         data_points = data_points.to_numpy().tolist()
         centroids = _get_centroids_from_c(data_points, initial_centroids, iterations, k, epsilon)
         return centroids, initial_centroids_indexes
+
+
+def get_data_points_from_two_files(filepath1, filepath2):
+    data_points_1 = pd.read_csv(filepath1, header=None, index_col=0)
+    data_points_1.index.names = ['INDEX']
+    data_points_2 = pd.read_csv(filepath2, header=None, index_col=0)
+    data_points_2.index.names = ['INDEX']
+
+    data_points = pd.merge(data_points_1, data_points_2, on='INDEX', how='inner')
+    return data_points
 
 
 def main():
@@ -82,7 +74,10 @@ def main():
         if k == 0:
             centroids, initial_centroids_indexes = [], []
         else:
-            centroids, initial_centroids_indexes = apply_kmeans_pp(k, iterations, epsilon, filepath1, filepath2)
+            data_points = get_data_points_from_two_files(filepath1, filepath2)
+            if k > len(data_points):
+                raise ValueError("Number of clusters can't be higher than number of points")
+            centroids, initial_centroids_indexes = apply_kmeans_pp(k, iterations, epsilon, data_points)
         print_output(centroids, initial_centroids_indexes)
 
     except:
@@ -105,7 +100,8 @@ def get_list_of_initial_centroids(k, data_points):
             axis=1)  # adding new column to data_points of distance between each vector to i centroid
         data_points['D'] = data_points.iloc[:, -i:].min(axis=1)  # adding new column of the minimum distance squared
         data_points['D'] = data_points['D'] / data_points['D'].sum()  # calculating probability for each line
-        next_centroid = np.random.choice(data_points.shape[0], 1, p=np.array(data_points['D'].values.tolist()))  # according to probabilities choosing new centroid
+        next_centroid = np.random.choice(data_points.shape[0], 1, p=np.array(
+            data_points['D'].values.tolist()))  # according to probabilities choosing new centroid
         index_initial_centroids.append(next_centroid)
         centroids = pd.merge(centroids, data_points.iloc[next_centroid, 0:cols],
                              how='outer')  # adding new centroid to data of centroids
@@ -116,8 +112,7 @@ def get_list_of_initial_centroids(k, data_points):
 
 def print_output(list_centroids, list_index):
     print(*[list_index], sep=",")
-    for centroid in list_centroids:
-        print(*[f"{i:.4f}".rstrip('0') for i in centroid], sep=",")
+    print_matrix(list_centroids)
 
 
 if __name__ == '__main__':
