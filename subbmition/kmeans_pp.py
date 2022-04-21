@@ -110,7 +110,7 @@ def get_list_of_initial_centroids(k, data_points):
 
 
 def print_output(list_centroids, list_index):
-    print(*[list_index], sep=",")
+    print(*list_index, sep=",")
     print_matrix(list_centroids)
 
 
