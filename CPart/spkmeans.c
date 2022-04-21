@@ -62,7 +62,7 @@ int main(int argc, char ** argv) {
     }
     //jacobi
     else if (strcmp(goal, goalOptions[3]) == 0) {
-        if (shape[0] != shape[1] || !checkMatSymmetric(x, shape[0], shape[0])) { //Not symmetric of squared
+        if (!checkMatSymmetric(x, shape[0], shape[1])) { //Not symmetric of squared
             printf(INPUT_ERR);
             return 1;
         }
@@ -538,6 +538,9 @@ void freeMat(double ** mat, unsigned int rows){
 
 unsigned int checkMatSymmetric(double ** mat, unsigned int rows, unsigned int cols) {
     unsigned int i, j;
+
+    if(rows != cols)
+        return FALSE;
 
     for (i = 0; i < rows; i++) {
         for (j = 0; j < cols; j++) {
