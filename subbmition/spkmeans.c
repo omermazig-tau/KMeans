@@ -1,6 +1,3 @@
-//
-// Created by roydd on 4/13/2022.
-//
 #include "spkmeans.h"
 
 int main(int argc, char ** argv) {
@@ -26,7 +23,6 @@ int main(int argc, char ** argv) {
     goal = argv[1];
 
 
-    //wam
     if (strcmp(goal, goalOptions[0]) == 0) {
         mat1 = getWeightAdjacency(x, shape[0], shape[1]);
         printMat(mat1, shape[0], shape[0]);
@@ -35,7 +31,6 @@ int main(int argc, char ** argv) {
         free(shape);
         return 0;
     }
-    //ddg
     else if (strcmp(goal, goalOptions[1]) == 0) {
         mat1 = getWeightAdjacency(x, shape[0], shape[1]);
         mat2 = getDiagonalDegreeMat(mat1, shape[0]);
@@ -46,7 +41,6 @@ int main(int argc, char ** argv) {
         free(shape);
         return 0;
     }
-    //lnorm
     else if (strcmp(goal, goalOptions[2]) == 0) {
         mat1 = getWeightAdjacency(x, shape[0], shape[1]);
         mat2 = getDiagonalDegreeMat(mat1, shape[0]);
@@ -59,7 +53,6 @@ int main(int argc, char ** argv) {
         free(shape);
         return 0;
     }
-    //jacobi
     else if (strcmp(goal, goalOptions[3]) == 0) {
         if (!checkMatSymmetric(x, shape[0], shape[1])) { //Not symmetric of squared
             printf(INPUT_ERR);
