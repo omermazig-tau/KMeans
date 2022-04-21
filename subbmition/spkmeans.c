@@ -3,7 +3,6 @@
 //
 #include "spkmeans.h"
 
-//Core methods
 int main(int argc, char ** argv) {
     char *inputFile, *goal;
     unsigned int * shape;
@@ -74,11 +73,7 @@ int main(int argc, char ** argv) {
         return 0;
     }
     else if (strcmp(goal, "spk") == 0) {
-        //Remove this - Only for debugging
-        //k value is arbitrary since `spk` doesn't return it
         mat1 = spk(x, shape[0], shape[1], 0);
-        //int k = 26;
-        //printMat(mat1, shape[0], k);
         freeMat(mat1, shape[0]);
         freeMat(x, shape[0]);
         free(shape);
@@ -179,8 +174,6 @@ double ** jacobiAlgorithm(double ** mat, unsigned int n) {
 }
 
 
-
-// Helpful methods
 
 double ** createZeroMatrix(unsigned int rows, unsigned int cols) {
     unsigned int i;
@@ -448,7 +441,7 @@ double ** getKFirstEigenvectors(double * eigenValues, double ** eigenVectors, un
 
 double ** calcTMat(double ** uMat, unsigned int rows, unsigned int cols) {
     double ** tMat, sum, divider;
-    unsigned int i, j, k;
+    unsigned int i, j;
 
     sum = 0;
     tMat = createZeroMatrix(rows, cols);
@@ -520,7 +513,7 @@ void printMat(double ** mat, unsigned int rows, unsigned int cols) {
 
     for (i = 0; i < rows; i++) {
         for (j = 0; j < cols; j++) {
-            if (convertToKDigits(mat[i][j], 4) == 0)  { //Prevent printing of -0.0000
+            if (convertToKDigits(mat[i][j], 4) == 0)  {
                 printf("%.4f", 0.0);
             }
             else {
@@ -568,7 +561,6 @@ double ** spk (double ** x, unsigned int rows, unsigned int cols, unsigned int k
     if (k == 0) {
         k = determineK(mat4[0], rows);
         if (k == 1) {
-            //TODO - Omer - need to find a different way to do alert the error here
             printf(NOT_INPUT_ERR);
             exit(1);
         }

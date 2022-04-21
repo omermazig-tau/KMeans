@@ -54,4 +54,4 @@ double convertToKDigits(double num, unsigned int k);
 int getSign(double num);
 int cmp(const void *a, const void *b);
 unsigned int * getSortedIndex(const double * arr, unsigned len);
-#endif //CPART_SPKMEANS_H
+#endif
