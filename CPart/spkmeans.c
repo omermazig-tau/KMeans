@@ -74,6 +74,17 @@ int main(int argc, char ** argv) {
         free(shape);
         return 0;
     }
+    else if (strcmp(goal, "spk") == 0) {
+        //Remove this - Only for debugging
+        //k value is arbitrary since `spk` doesn't return it
+        mat1 = spk(x, shape[0], shape[1], 0);
+        //int k = 26;
+        //printMat(mat1, shape[0], k);
+        freeMat(mat1, shape[0]);
+        freeMat(x, shape[0]);
+        free(shape);
+        return 0;
+    }
     else {
         printf(INPUT_ERR);
         return 1;
@@ -410,20 +421,26 @@ double ** addVectorFirstLineMatrix(double ** mat, const double * vector, unsigne
 
 
 unsigned int determineK(double * eigenValues, unsigned int n) {
-    unsigned int limit, i, maxI;
-    double max;
+    unsigned int i, maxI;
+    double max, possibleMax;
 
-    max = fabs(eigenValues[0] - eigenValues[1]);
-    maxI = 0;
-    limit = n / 2;
+    unsigned int *indices = getSortedIndex(eigenValues, n);
 
-    for (i = 1; i <= limit; i++) {
-        if (fabs(eigenValues[i] - eigenValues[i + 1]) > max) {
-            max = fabs(eigenValues[i] - eigenValues[i + 1]);
-            maxI = i;
+    for (i = 0; i < n; i++) {
+        printf("%i,", indices[i]);
+    }
+
+    max = eigenValues[indices[1]] - eigenValues[indices[0]];
+    maxI = indices[0];
+
+    for (i = 1; i <= (n / 2); i++) {
+        possibleMax = eigenValues[indices[i+1]] - eigenValues[indices[i]];
+        if (possibleMax > max) {
+            max = possibleMax;
+            maxI = indices[i];
         }
     }
-    return maxI + 1;
+    return maxI;
 }
 
 
@@ -435,7 +452,7 @@ double ** getKFirstEigenvectors(double * eigenValues, double ** eigenVectors, un
     firstKEigenVectors = createZeroMatrix(n, k);
     for (i = 0; i < n; i++) {
         for (j = 0; j < k; j++) {
-            firstKEigenVectors[i][j] = eigenVectors[indices[i]][j];
+            firstKEigenVectors[i][j] = eigenVectors[i][indices[j]];
         }
     }
     free(indices);
@@ -444,19 +461,23 @@ double ** getKFirstEigenvectors(double * eigenValues, double ** eigenVectors, un
 
 
 double ** calcTMat(double ** uMat, unsigned int rows, unsigned int cols) {
-    double ** tMat, sum;
+    double ** tMat, sum, divider;
     unsigned int i, j, k;
 
     sum = 0;
     tMat = createZeroMatrix(rows, cols);
     for (i = 0; i < rows; i++) {
         for (j = 0; j < cols; j++) {
-            for (k = 0; k < cols; k++) {
-                sum += pow(uMat[i][k], 2);
-            }
-            tMat[i][j] = uMat[i][j] / sqrt(sum);
-            sum = 0;
+            sum += pow(uMat[i][j], 2);
         }
+        divider = sqrt(sum);
+        for (j = 0; j < cols; j++) {
+            if (divider == 0)
+                tMat[i][j] = 0.0;
+            else
+                tMat[i][j] = uMat[i][j] / divider;
+        }
+        sum = 0;
     }
     return tMat;
 }
@@ -563,6 +584,34 @@ void freeMat(double ** mat, unsigned int rows){
     free(mat);
 }
 
+double ** spk (double ** x, unsigned int rows, unsigned int cols, unsigned int k) {
+    double **mat1, **mat2, **mat3, **mat4, **mat5, **tMat;
+
+    mat1 = getWeightAdjacency(x, rows, cols);
+    mat2 = getDiagonalDegreeMat(mat1, rows);
+    mat3 = getNormalizedGraphLaplacian(mat1, mat2, rows);
+    mat4 = jacobiAlgorithm(mat3, rows);
+
+    if (k == 0) {
+        k = determineK(mat4[0], rows);
+        if (k == 1) {
+            //TODO - Omer - need to find a different way to do alert the error here
+            printf(NOT_INPUT_ERR);
+            exit(1);
+        }
+    }
+    mat5 = getKFirstEigenvectors(mat4[0], mat4 + 1, rows, k);
+    tMat = calcTMat(mat5, rows, k);
+
+    freeMat(mat1, rows);
+    freeMat(mat2, rows);
+    freeMat(mat3, rows);
+    freeMat(mat4, rows + 1);
+    freeMat(mat5, rows);
+
+    return tMat;
+}
+
 unsigned int checkMatSymmetric(double ** mat, unsigned int rows, unsigned int cols) {
     unsigned int i, j;
 
@@ -593,9 +642,9 @@ int cmp(const void *a, const void *b)
     struct Pair *a1 = (struct Pair *)a;
     struct Pair *a2 = (struct Pair *)b;
     if ((*a1).value > (*a2).value)
-        return -1;
-    else if ((*a1).value < (*a2).value)
         return 1;
+    else if ((*a1).value < (*a2).value)
+        return -1;
     else
         return 0;
 }

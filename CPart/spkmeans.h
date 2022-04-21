@@ -48,6 +48,7 @@ double ** createMatFromFile(FILE * f, const unsigned int * shape);
 void printMat(double ** mat, unsigned int rows, unsigned int cols);
 unsigned int isDiagonal(double ** mat, unsigned int n);
 void freeMat(double ** mat, unsigned int rows);
+double ** spk (double ** x, unsigned int rows, unsigned int cols, unsigned int k);
 unsigned int checkMatSymmetric(double ** mat, unsigned int rows, unsigned int cols);
 int getSign(double num);
 int cmp(const void *a, const void *b);
