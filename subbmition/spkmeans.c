@@ -448,7 +448,7 @@ double ** getKFirstEigenvectors(double * eigenValues, double ** eigenVectors, un
 
 double ** calcTMat(double ** uMat, unsigned int rows, unsigned int cols) {
     double ** tMat, sum, divider;
-    unsigned int i, j, k;
+    unsigned int i, j;
 
     sum = 0;
     tMat = createZeroMatrix(rows, cols);
