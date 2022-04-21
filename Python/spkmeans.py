@@ -56,6 +56,8 @@ def main():
                     flatten_matrix_result = spkmeans_api.get_jacobi_matrix(rows, flatten_matrix)
                 else:
                     raise ValueError('An unsymmetrical matrix has been passed to Jacobi algorithm')
+                # Jacobi returns a matrix with one additional line (the eigenvalues)
+                rows += 1
             else:
                 # TODO - remove the raise before submission
                 raise ValueError

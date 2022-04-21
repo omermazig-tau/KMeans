@@ -115,9 +115,9 @@ static PyObject* get_jacobi_matrix(PyObject *self, PyObject *args)
 
     matrix = jacobiAlgorithm(matrix, n);
 
-    PyObject* newFlattenMatrix = getFlattenMatrixFromMatrix(matrix, n, n);
+    PyObject* newFlattenMatrix = getFlattenMatrixFromMatrix(matrix, n + 1, n);
 
-    freeMatrixMemory(matrix, n);
+    freeMatrixMemory(matrix, n + 1);
 
     return newFlattenMatrix;
 }
