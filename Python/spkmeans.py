@@ -37,12 +37,16 @@ def spk(flatten_matrix, rows, cols, k):
 def preform_specific_goal(flatten_matrix, rows, cols, goal):
     if goal == 'wam':
         flatten_matrix_result = spkmeans_api.get_weight_adjacency_matrix(rows, cols, flatten_matrix)
+        cols = rows
     elif goal == 'ddg':
         flatten_matrix_result = spkmeans_api.get_diagonal_degree_matrix(rows, cols, flatten_matrix)
+        cols = rows
     elif goal == 'lnorm':
         flatten_matrix_result = spkmeans_api.get_normalized_graph_laplacian(rows, cols, flatten_matrix)
+        cols = rows
     elif goal == 'jacobi':
         flatten_matrix_result = spkmeans_api.get_jacobi_matrix(rows, cols, flatten_matrix)
+        cols = rows
         rows += 1
     else:
         # Impossible to get here
