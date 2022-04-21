@@ -48,7 +48,7 @@ static PyObject* get_weight_adjacency_matrix(PyObject *self, PyObject *args)
 
     matrix = getWeightAdjacency(matrix, rows, cols);
 
-    PyObject* newFlattenMatrix = getFlattenMatrixFromMatrix(matrix, rows, cols);
+    PyObject* newFlattenMatrix = getFlattenMatrixFromMatrix(matrix, rows, rows);
 
     freeMatrixMemory(matrix, rows);
 
@@ -70,7 +70,7 @@ static PyObject* get_diagonal_degree_matrix(PyObject *self, PyObject *args)
 
     matrix = getDiagonalDegreeMat(matrix, rows);
 
-    PyObject* newFlattenMatrix = getFlattenMatrixFromMatrix(matrix, rows, cols);
+    PyObject* newFlattenMatrix = getFlattenMatrixFromMatrix(matrix, rows, rows);
 
     freeMatrixMemory(matrix, rows);
 
@@ -95,7 +95,7 @@ static PyObject* get_normalized_graph_laplacian(PyObject *self, PyObject *args)
 
     matrix = getNormalizedGraphLaplacian(matrix, matrix2, rows);
 
-    PyObject* newFlattenMatrix = getFlattenMatrixFromMatrix(matrix, rows, cols);
+    PyObject* newFlattenMatrix = getFlattenMatrixFromMatrix(matrix, rows, rows);
 
     freeMatrixMemory(matrix, rows);
     freeMatrixMemory(matrix2, rows);
