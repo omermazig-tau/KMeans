@@ -54,7 +54,7 @@ int main(int argc, char ** argv) {
         return 0;
     }
     else if (strcmp(goal, goalOptions[3]) == 0) {
-        if (!checkMatSymmetric(x, shape[0], shape[1])) { //Not symmetric of squared
+        if (!checkMatSymmetric(x, shape[0], shape[1])) {
             printf(INPUT_ERR);
             return 1;
         }
