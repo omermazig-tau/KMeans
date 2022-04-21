@@ -4,7 +4,6 @@ from typing import List
 def print_matrix(matrix: List[List[float]]):
     for row in matrix:
         print(*[f"{i:.4f}" for i in row], sep=",")
-    print('')
 
 
 def get_matrix_from_flattened_list(rows, cols, flatten_centroids: List[float]) -> List[List[float]]:
