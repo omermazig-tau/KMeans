@@ -426,10 +426,6 @@ unsigned int determineK(double * eigenValues, unsigned int n) {
 
     unsigned int *indices = getSortedIndex(eigenValues, n);
 
-    for (i = 0; i < n; i++) {
-        printf("%i,", indices[i]);
-    }
-
     max = eigenValues[indices[1]] - eigenValues[indices[0]];
     maxI = indices[0];
 
