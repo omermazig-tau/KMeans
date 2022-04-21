@@ -70,8 +70,13 @@ def main():
         flatten_matrix = tuple(itertools.chain.from_iterable(matrix))
 
         if goal == 'spk':
-            centroids, initial_centroids_indexes = spk(flatten_matrix, rows, cols, k)
-            print_output(centroids, initial_centroids_indexes)
+            try:
+                centroids, initial_centroids_indexes = spk(flatten_matrix, rows, cols, k)
+            except SystemError:
+                # That means that K was 1
+                print('An Error Has Occurred')
+            else:
+                print_output(centroids, initial_centroids_indexes)
         else:
             matrix_result = preform_specific_goal(flatten_matrix, rows, cols, goal)
             print_matrix(matrix_result)

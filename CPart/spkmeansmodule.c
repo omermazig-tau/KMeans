@@ -115,9 +115,7 @@ static PyObject* get_jacobi_matrix(PyObject *self, PyObject *args)
     double **matrix = getMatrixFromFlattenMatrix(flattenMatrix, rows, cols);
 
     if (!checkMatSymmetric(matrix, rows, cols)) { //Not symmetric of squared
-        //TODO - Omer - need to find a different way to do alert the error here
-        printf(NOT_INPUT_ERR);
-        exit(1);
+        return NULL;
     }
 
     matrix = jacobiAlgorithm(matrix, rows);
@@ -152,9 +150,7 @@ static PyObject* get_spk_matrix(PyObject *self, PyObject *args) {
     if (k == 0) {
         k = determineK(mat4[0], rows);
         if (k == 1) {
-            //TODO - Omer - need to find a different way to do alert the error here
-            printf(NOT_INPUT_ERR);
-            exit(1);
+            return NULL;
         }
     }
     mat5 = getKFirstEigenvectors(mat4[0], mat4 + 1, rows, k);
