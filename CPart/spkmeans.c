@@ -427,16 +427,16 @@ unsigned int determineK(double * eigenValues, unsigned int n) {
     unsigned int *indices = getSortedIndex(eigenValues, n);
 
     max = eigenValues[indices[1]] - eigenValues[indices[0]];
-    maxI = indices[0];
+    maxI = 0;
 
     for (i = 1; i <= (n / 2); i++) {
         possibleMax = eigenValues[indices[i+1]] - eigenValues[indices[i]];
         if (possibleMax > max) {
             max = possibleMax;
-            maxI = indices[i];
+            maxI = i;
         }
     }
-    return maxI;
+    return maxI + 1;
 }
 
 
