@@ -11,6 +11,7 @@ DEFAULT_EPSILON = 0.0001
 
 
 def compare_data_points(data_point, other_data_point, epsilon):
+    assert len(data_point) == len(other_data_point), "Data points are in different length and therefore different!"
     for a, b in zip(data_point, other_data_point):
         assert math.isclose(a, b, abs_tol=epsilon)
 
@@ -67,5 +68,5 @@ def get_and_assert_matrix_result(goal, input_filepath, output_filepath):
     expected_output = read_date_from_file(output_filepath)
 
     assert len(matrix_result) == len(expected_output)
-    for i, row in enumerate(matrix_result):
-        compare_data_points(row, expected_output[i], DEFAULT_EPSILON)
+    for i, row in enumerate(expected_output):
+        compare_data_points(row, matrix_result[i], DEFAULT_EPSILON)
