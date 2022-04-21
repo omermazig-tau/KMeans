@@ -1,13 +1,12 @@
 import itertools
 import sys
-from typing import List
 
 import numpy as np
 import pandas as pd
 import os
 
-from Python import mykmeanssp
-from Python.common import print_matrix, get_matrix_from_flattened_list
+import mykmeanssp
+from common import print_matrix, get_matrix_from_flattened_list
 
 DEFAULT_ITERATIONS_NUMBER = 300
 
