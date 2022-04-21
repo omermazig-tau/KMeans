@@ -44,9 +44,6 @@ static PyObject* fit(PyObject *self, PyObject *args)
     PyObject* flattenCentroids;
     PyObject* flattenDataPoints;
 
-    unsigned int i;
-    unsigned int j;
-
     if (!PyArg_ParseTuple(args, "iiiidOO", &iterations, &rows, &cols, &k, &epsilon, &flattenCentroids, &flattenDataPoints))
         return NULL;
 
