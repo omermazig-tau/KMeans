@@ -121,6 +121,7 @@ double ** getNormalizedGraphLaplacian(double ** weights, double ** diagDegreeMat
     freeMat(mat1, n);
     freeMat(mat2, n);
     freeMat(mat3, n);
+    freeMat(powMinusHalfD, n);
     return NormalizedGraphLaplacian;
 }
 
