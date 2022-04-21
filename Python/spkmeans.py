@@ -24,6 +24,32 @@ def is_matrix_symmetrical(matrix):
     return True
 
 
+def spk(flatten_matrix, rows, cols, k):
+    flatten_matrix_result = spkmeans_api.get_spk_matrix(rows, cols, k, flatten_matrix)
+    k = len(flatten_matrix_result) / rows
+    matrix_result = get_matrix_from_flattened_list(rows, k, flatten_matrix_result)
+    centroids, initial_centroids_indexes = apply_kmeans_pp(k, DEFAULT_ITERATIONS_NUMBER, 0.0, matrix_result)
+    return centroids, initial_centroids_indexes
+
+
+def preform_specific_goal(flatten_matrix, rows, cols, goal):
+    if goal == 'wam':
+        flatten_matrix_result = spkmeans_api.get_weight_adjacency_matrix(rows, cols, flatten_matrix)
+    elif goal == 'ddg':
+        flatten_matrix_result = spkmeans_api.get_diagonal_degree_matrix(rows, cols, flatten_matrix)
+    elif goal == 'lnorm':
+        flatten_matrix_result = spkmeans_api.get_normalized_graph_laplacian(rows, cols, flatten_matrix)
+    elif goal == 'jacobi':
+        flatten_matrix_result = spkmeans_api.get_jacobi_matrix(rows, cols, flatten_matrix)
+        rows += 1
+    else:
+        # Impossible to get here
+        raise ValueError
+
+    matrix_result = get_matrix_from_flattened_list(rows, cols, flatten_matrix_result)
+    return matrix_result
+
+
 def main():
     try:
         try:
@@ -38,31 +64,10 @@ def main():
         flatten_matrix = tuple(itertools.chain.from_iterable(matrix))
 
         if goal == 'spk':
-            flatten_matrix_result = spkmeans_api.get_spk_matrix(rows, cols, k, flatten_matrix)
-            k = len(flatten_matrix_result) / rows
-            matrix_result = get_matrix_from_flattened_list(rows, k, flatten_matrix_result)
-            centroids, initial_centroids_indexes = apply_kmeans_pp(k, DEFAULT_ITERATIONS_NUMBER, 0.0, matrix_result)
+            centroids, initial_centroids_indexes = spk(flatten_matrix, rows, cols, k)
             print_output(centroids, initial_centroids_indexes)
-
         else:
-            if goal == 'wam':
-                flatten_matrix_result = spkmeans_api.get_weight_adjacency_matrix(rows, cols, flatten_matrix)
-            elif goal == 'ddg':
-                flatten_matrix_result = spkmeans_api.get_diagonal_degree_matrix(rows, cols, flatten_matrix)
-            elif goal == 'lnorm':
-                flatten_matrix_result = spkmeans_api.get_normalized_graph_laplacian(rows, cols, flatten_matrix)
-            elif goal == 'jacobi':
-                if is_matrix_symmetrical(matrix):
-                    flatten_matrix_result = spkmeans_api.get_jacobi_matrix(rows, flatten_matrix)
-                else:
-                    raise ValueError('An unsymmetrical matrix has been passed to Jacobi algorithm')
-                # Jacobi returns a matrix with one additional line (the eigenvalues)
-                rows += 1
-            else:
-                # TODO - remove the raise before submission
-                raise ValueError
-
-            matrix_result = get_matrix_from_flattened_list(rows, cols, flatten_matrix_result)
+            matrix_result = preform_specific_goal(flatten_matrix, rows, cols, goal)
             print_matrix(matrix_result)
 
     except Exception as e:
