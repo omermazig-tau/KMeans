@@ -54,8 +54,15 @@ def test_spk_sanity(i):
     cols = len(matrix[0])
     flatten_matrix = tuple(itertools.chain.from_iterable(matrix))
 
-    centroids, initial_centroids_indexes = spk(flatten_matrix, rows, cols, k)
-    test_kmeans_pp_sanity.get_and_assert_new_centroids(centroids, initial_centroids_indexes, output_filepath, DEFAULT_EPSILON)
+    try:
+        centroids, initial_centroids_indexes = spk(flatten_matrix, rows, cols, k)
+    except SystemError:
+        # That means that K was 1
+        with open(output_filepath, 'r') as file1:
+            expected_output = file1.read()
+        assert expected_output == 'An Error Has Occurred\n'
+    else:
+        test_kmeans_pp_sanity.get_and_assert_new_centroids(centroids, initial_centroids_indexes, output_filepath, DEFAULT_EPSILON)
 
 
 def get_and_assert_matrix_result(goal, input_filepath, output_filepath):

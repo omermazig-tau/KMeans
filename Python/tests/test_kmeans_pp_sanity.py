@@ -10,8 +10,6 @@ from Python.kmeans_pp import DEFAULT_ITERATIONS_NUMBER, apply_kmeans_pp, get_dat
 def read_date_from_file(filepath: str) -> List[Tuple[float]]:
     with open(filepath, 'r') as file1:
         data_points = file1.read().splitlines()
-    if data_points == ['An Error Has Occurred']:
-        raise ValueError('An error has Occurred')
     data_points = [tuple([float(i) for i in line.split(",")]) for line in data_points]
     return data_points
 
