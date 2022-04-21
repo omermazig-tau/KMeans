@@ -1,7 +1,3 @@
-//
-// Created by roydd on 4/15/2022.
-//
-
 #ifndef CPART_SPKMEANS_H
 #define CPART_SPKMEANS_H
 
