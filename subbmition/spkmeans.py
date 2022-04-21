@@ -2,10 +2,10 @@ import itertools
 import sys
 import pandas as pd
 
-from Python.common import print_matrix, get_matrix_from_flattened_list
-from Python.kmeans_pp import apply_kmeans_pp, print_output, DEFAULT_ITERATIONS_NUMBER
-from Python.kmeans import read_date_from_file
-from Python import spkmeans_api
+from common import print_matrix, get_matrix_from_flattened_list
+from kmeans_pp import apply_kmeans_pp, print_output, DEFAULT_ITERATIONS_NUMBER
+from kmeans import read_date_from_file
+import spkmeans_api
 
 
 def parse_command_line():
