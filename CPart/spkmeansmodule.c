@@ -181,6 +181,7 @@ static PyMethodDef _methods[] = {
     {"get_diagonal_degree_matrix", (PyCFunction)get_diagonal_degree_matrix, METH_VARARGS, PyDoc_STR("Getting the Diagonal Degree matrix from a matrix")},
     {"get_normalized_graph_laplacian", (PyCFunction)get_normalized_graph_laplacian, METH_VARARGS, PyDoc_STR("Getting the Normalized graph laplacian matrix from a matrix")},
     {"get_jacobi_matrix", (PyCFunction)get_jacobi_matrix, METH_VARARGS, PyDoc_STR("Getting the matrix after jacobi algorithm")},
+    {"get_spk_matrix", (PyCFunction)get_spk_matrix, METH_VARARGS, PyDoc_STR("Getting the matrix after full spk")},
     {NULL, NULL, 0, NULL}   /* sentinel */
 };
 

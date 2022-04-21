@@ -1,8 +1,9 @@
 import itertools
 import sys
+import pandas as pd
 
 from Python.common import print_matrix, get_matrix_from_flattened_list
-from Python.kmeans_pp import apply_kmeans_pp, print_output
+from Python.kmeans_pp import apply_kmeans_pp, print_output, DEFAULT_ITERATIONS_NUMBER
 from Python.kmeans import read_date_from_file
 from Python import spkmeans_api
 
@@ -19,15 +20,16 @@ def parse_command_line():
     return k, goal, file_name
 
 
-def is_matrix_symmetrical(matrix):
-    # TODO - Implement once we figure out what format is the matrix (numpy or List[List[float]])
-    return True
-
-
 def spk(flatten_matrix, rows, cols, k):
     flatten_matrix_result = spkmeans_api.get_spk_matrix(rows, cols, k, flatten_matrix)
     k = len(flatten_matrix_result) / rows
+    if k == int(k):
+        k = int(k)
+    else:
+        raise ValueError("K is somehow a fraction, meaning we fucked up")
+
     matrix_result = get_matrix_from_flattened_list(rows, k, flatten_matrix_result)
+    matrix_result = pd.DataFrame(matrix_result)
     centroids, initial_centroids_indexes = apply_kmeans_pp(k, DEFAULT_ITERATIONS_NUMBER, 0.0, matrix_result)
     return centroids, initial_centroids_indexes
 
