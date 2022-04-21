@@ -105,19 +105,26 @@ static PyObject* get_normalized_graph_laplacian(PyObject *self, PyObject *args)
 
 static PyObject* get_jacobi_matrix(PyObject *self, PyObject *args)
 {
-    unsigned int n;
+    unsigned int rows;
+    unsigned int cols;
     PyObject* flattenMatrix;
 
-    if (!PyArg_ParseTuple(args, "iO", &n, &flattenMatrix))
+    if (!PyArg_ParseTuple(args, "iiO", &rows, &cols, &flattenMatrix))
         return NULL;
 
-    double **matrix = getMatrixFromFlattenMatrix(flattenMatrix, n, n);
+    double **matrix = getMatrixFromFlattenMatrix(flattenMatrix, rows, cols);
 
-    matrix = jacobiAlgorithm(matrix, n);
+    if (!checkMatSymmetric(matrix, rows, cols)) { //Not symmetric of squared
+        //TODO - Omer - need to find a different way to do alert the error here
+        printf(NOT_INPUT_ERR);
+        exit(1);
+    }
 
-    PyObject* newFlattenMatrix = getFlattenMatrixFromMatrix(matrix, n + 1, n);
+    matrix = jacobiAlgorithm(matrix, rows);
 
-    freeMatrixMemory(matrix, n + 1);
+    PyObject* newFlattenMatrix = getFlattenMatrixFromMatrix(matrix, rows + 1, cols);
+
+    freeMatrixMemory(matrix, rows + 1);
 
     return newFlattenMatrix;
 }
