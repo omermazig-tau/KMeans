@@ -162,7 +162,9 @@ double ** jacobiAlgorithm(double ** mat, unsigned int n) {
         sumOld = sumNew;
         oldA = newA;
         pMat = createMatrixP(oldA, n);
-        vMat = multiSquaredMatrices(vMat, pMat, n);
+        matForMulti = multiSquaredMatrices(vMat, pMat, n);
+        freeMat(vMat, n);
+        vMat = matForMulti;
         transP = transformSquaredMatrix(pMat, n);
         matForMulti = multiSquaredMatrices(transP, oldA, n);
         newA = multiSquaredMatrices(matForMulti, pMat, n);
