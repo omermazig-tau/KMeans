@@ -2,7 +2,7 @@ import itertools
 import sys
 import pandas as pd
 
-from Python.common import print_matrix, get_matrix_from_flattened_list
+from Python.common import print_matrix, print_eigen_values, get_matrix_from_flattened_list
 from Python.kmeans_pp import apply_kmeans_pp, print_output, DEFAULT_ITERATIONS_NUMBER
 from Python.kmeans import read_date_from_file
 from Python import spkmeans_api
@@ -56,6 +56,11 @@ def preform_specific_goal(flatten_matrix, rows, cols, goal):
     return matrix_result
 
 
+def print_jacobi_matrix(matrix):
+    print_eigen_values(matrix[0])
+    print_matrix(matrix[1:])
+
+
 def main():
     try:
         try:
@@ -79,7 +84,7 @@ def main():
                 print_output(centroids, initial_centroids_indexes)
         else:
             matrix_result = preform_specific_goal(flatten_matrix, rows, cols, goal)
-            print_matrix(matrix_result)
+            print_jacobi_matrix(matrix_result)
 
     except Exception as e:
         print("An Error Has Occurred")
