@@ -84,7 +84,10 @@ def main():
                 print_output(centroids, initial_centroids_indexes)
         else:
             matrix_result = preform_specific_goal(flatten_matrix, rows, cols, goal)
-            print_jacobi_matrix(matrix_result)
+            if goal == 'jacobi':
+                print_jacobi_matrix(matrix_result)
+            else:
+                print_matrix(matrix_result)
 
     except Exception as e:
         print("An Error Has Occurred")
