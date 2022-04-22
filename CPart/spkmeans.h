@@ -36,7 +36,6 @@ double ** getIdentityMat(unsigned n);
 unsigned int * getIndexesValOffDiagSquaredMat(double ** mat, unsigned int n);
 double ** createMatrixP(double ** mat, unsigned int n);
 double getSumSquaredOffDiagElement(double ** mat, unsigned int n);
-unsigned int isConvergenceDiag(double ** matNew, double ** matOld, unsigned int n);
 double ** transformSquaredMatrix(double ** mat, unsigned int n);
 double * getDiagSquaredMatrix(double ** mat, unsigned int n);
 double ** addVectorFirstLineMatrix(double ** mat, const double * vector, unsigned int rowsMat, unsigned int cols);

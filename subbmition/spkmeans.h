@@ -6,7 +6,7 @@
 #define INPUT_ERR "Invalid Input!"
 #define NOT_INPUT_ERR "Invalid Input!"
 #define MAX_NUM_ITER 100
-#define EPSILON pow(10, -5)
+#define EPSILON (pow(10, -5))
 
 #include <math.h>
 #include <string.h>
@@ -32,7 +32,6 @@ double ** getIdentityMat(unsigned n);
 unsigned int * getIndexesValOffDiagSquaredMat(double ** mat, unsigned int n);
 double ** createMatrixP(double ** mat, unsigned int n);
 double getSumSquaredOffDiagElement(double ** mat, unsigned int n);
-unsigned int isConvergenceDiag(double ** matNew, double ** matOld, unsigned int n);
 double ** transformSquaredMatrix(double ** mat, unsigned int n);
 double * getDiagSquaredMatrix(double ** mat, unsigned int n);
 double ** addVectorFirstLineMatrix(double ** mat, const double * vector, unsigned int rowsMat, unsigned int cols);

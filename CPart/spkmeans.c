@@ -139,7 +139,8 @@ double ** getNormalizedGraphLaplacian(double ** weights, double ** diagDegreeMat
 }
 
 double ** jacobiAlgorithm(double ** mat, unsigned int n) {
-    double ** vMat, **pMat, **newA, **oldA, *eigenValues, **eigenVectors, **oldVMat, **returnedMat, **matForMulti, **transP;
+    double ** vMat, **pMat, **newA, **oldA, *eigenValues, **eigenVectors, **returnedMat, **matForMulti, **transP;
+    double sumOld, sumNew;
     unsigned int iter;
 
     if(isDiagonal(mat, n)) {
@@ -152,37 +153,30 @@ double ** jacobiAlgorithm(double ** mat, unsigned int n) {
         return returnedMat;
     }
 
-
+    newA = createCopyMat(mat, n, n);
+    vMat = getIdentityMat(n);
+    sumNew = getSumSquaredOffDiagElement(newA, n);
     iter = 0;
-    oldA = createCopyMat(mat, n, n);
-    pMat = createMatrixP(oldA, n);
-    vMat = createCopyMat(pMat, n, n);
-    transP = transformSquaredMatrix(pMat, n);
-    matForMulti = multiSquaredMatrices(transP, oldA, n);
-    newA = multiSquaredMatrices(matForMulti, pMat, n);
-    freeMat(transP, n);
-    freeMat(matForMulti, n);
-    freeMat(pMat, n);
 
-    while (!(isConvergenceDiag(newA, oldA, n)) && iter < MAX_NUM_ITER) {
-        iter++;
-        freeMat(oldA, n);
+    do {
+        sumOld = sumNew;
         oldA = newA;
-
         pMat = createMatrixP(oldA, n);
-        oldVMat = vMat;
         vMat = multiSquaredMatrices(vMat, pMat, n);
-        freeMat(oldVMat, n);
-
         transP = transformSquaredMatrix(pMat, n);
         matForMulti = multiSquaredMatrices(transP, oldA, n);
         newA = multiSquaredMatrices(matForMulti, pMat, n);
-        freeMat(transP, n);
-        freeMat(matForMulti, n);
-        freeMat(pMat, n);
-    }
 
-    freeMat(oldA, n);
+        freeMat(matForMulti, n);
+        freeMat(oldA, n);
+        freeMat(transP, n);
+        freeMat(pMat, n);
+
+        sumNew = getSumSquaredOffDiagElement(newA, n);
+        iter++;
+    }
+    while ((sumOld - sumNew > EPSILON) && iter < MAX_NUM_ITER);
+
     eigenValues = getDiagSquaredMatrix(newA, n);
     freeMat(newA, n);
     eigenVectors = vMat;
@@ -363,18 +357,6 @@ double getSumSquaredOffDiagElement(double ** mat, unsigned int n) {
         }
     }
     return sum;
-}
-
-
-unsigned int isConvergenceDiag(double ** matNew, double ** matOld, unsigned int n) {
-    double sumOld, sumNew;
-
-    sumOld = getSumSquaredOffDiagElement(matOld, n);
-    sumNew = getSumSquaredOffDiagElement(matNew, n);
-    if (sumOld - sumNew <= EPSILON) {
-        return TRUE;
-    }
-    return FALSE;
 }
 
 
