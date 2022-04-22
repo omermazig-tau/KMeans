@@ -545,7 +545,7 @@ void printArrNoMinusZeros(double * arr, unsigned int len) {
     unsigned int i;
 
     for (i = 0; i < len; i++) {
-        if (arr[i] > -0.0001 && arr[i] < 0)  { //Prevent printing of -0.0000
+        if (arr[i] > -0.0001 && arr[i] < 0)  {
             printf("%.4f", 0.0);
         }
         else {
