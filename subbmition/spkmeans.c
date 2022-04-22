@@ -132,7 +132,7 @@ double ** jacobiAlgorithm(double ** mat, unsigned int n) {
 
     if(isDiagonal(mat, n)) {
         eigenValues = getDiagSquaredMatrix(mat, n);
-        eigenVectors = mat;
+        eigenVectors = getIdentityMat(n);
         returnedMat = addVectorFirstLineMatrix(eigenVectors, eigenValues, n, n);
 
         free(eigenValues);
