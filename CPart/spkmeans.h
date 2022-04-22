@@ -10,7 +10,7 @@
 #define INPUT_ERR "Invalid Input!"
 #define NOT_INPUT_ERR "Invalid Input!"
 #define MAX_NUM_ITER 100
-#define EPSILON pow(10, -5)
+#define EPSILON (pow(10, -5))
 
 #include <math.h>
 #include <string.h>
