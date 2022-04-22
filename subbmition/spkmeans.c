@@ -61,7 +61,7 @@ int main(int argc, char ** argv) {
         mat1 = jacobiAlgorithm(x, shape[0]);
         printArrNoMinusZeros(mat1[0], shape[0]);
         printMat(mat1 + 1, shape[0], shape[0]);
-        freeMat(mat1, shape[0]);
+        freeMat(mat1, shape[0] + 1);
         freeMat(x, shape[0]);
         free(shape);
         return 0;
