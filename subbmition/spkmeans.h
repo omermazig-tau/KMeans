@@ -46,8 +46,8 @@ unsigned int isDiagonal(double ** mat, unsigned int n);
 void freeMat(double ** mat, unsigned int rows);
 double ** spk (double ** x, unsigned int rows, unsigned int cols, unsigned int k);
 unsigned int checkMatSymmetric(double ** mat, unsigned int rows, unsigned int cols);
-double convertToKDigits(double num, unsigned int k);
 int getSign(double num);
 int cmp(const void *a, const void *b);
 unsigned int * getSortedIndex(const double * arr, unsigned len);
+void printArrNoMinusZeros(double * arr, unsigned int len);
 #endif
