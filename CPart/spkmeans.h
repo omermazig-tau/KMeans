@@ -49,8 +49,8 @@ void printMat(double ** mat, unsigned int rows, unsigned int cols);
 unsigned int isDiagonal(double ** mat, unsigned int n);
 void freeMat(double ** mat, unsigned int rows);
 unsigned int checkMatSymmetric(double ** mat, unsigned int rows, unsigned int cols);
-double convertToKDigits(double num, unsigned int k);
 int getSign(double num);
 int cmp(const void *a, const void *b);
 unsigned int * getSortedIndex(const double * arr, unsigned len);
+void printArrNoMinusZeros(double * arr, unsigned int len);
 #endif //CPART_SPKMEANS_H

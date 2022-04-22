@@ -67,7 +67,8 @@ int main(int argc, char ** argv) {
             return 1;
         }
         mat1 = jacobiAlgorithm(x, shape[0]);
-        printMat(mat1, shape[0] + 1, shape[0]);
+        printArrNoMinusZeros(mat1[0], shape[0]);
+        printMat(mat1 + 1, shape[0], shape[0]);
         freeMat(mat1, shape[0]);
         freeMat(x, shape[0]);
         free(shape);
@@ -138,14 +139,14 @@ double ** jacobiAlgorithm(double ** mat, unsigned int n) {
     newA = multiSquaredMatrices(matForMulti, pMat, n);
     freeMat(transP, n);
     freeMat(matForMulti, n);
+    freeMat(pMat, n);
 
     while (!(isConvergenceDiag(newA, oldA, n)) && iter < MAX_NUM_ITER && !(isDiagonal(newA, n))) {
         iter++;
         freeMat(oldA, n);
         oldA = newA;
-        freeMat(pMat, n);
-        pMat = createMatrixP(oldA, n);
 
+        pMat = createMatrixP(oldA, n);
         oldVMat = vMat;
         vMat = multiSquaredMatrices(vMat, pMat, n);
         freeMat(oldVMat, n);
@@ -155,10 +156,12 @@ double ** jacobiAlgorithm(double ** mat, unsigned int n) {
         newA = multiSquaredMatrices(matForMulti, pMat, n);
         freeMat(transP, n);
         freeMat(matForMulti, n);
+        freeMat(pMat, n);
     }
 
     freeMat(oldA, n);
     eigenValues = getDiagSquaredMatrix(newA, n);
+    freeMat(newA, n);
     eigenVectors = vMat;
     returnedMat = addVectorFirstLineMatrix(eigenVectors, eigenValues, n, n);
 
@@ -499,18 +502,31 @@ void printMat(double ** mat, unsigned int rows, unsigned int cols) {
 
     for (i = 0; i < rows; i++) {
         for (j = 0; j < cols; j++) {
-            if (convertToKDigits(mat[i][j], 4) == 0)  { //Prevent printing of -0.0000
-                printf("%.4f", 0.0);
-            }
-            else {
-                printf("%.4f", mat[i][j]);
-            }
+            printf("%.4f", mat[i][j]);
             if (j + 1 != cols) {
                 printf(",");
             }
         }
         printf("\n");
     }
+}
+
+
+void printArrNoMinusZeros(double * arr, unsigned int len) {
+    unsigned int i;
+
+    for (i = 0; i < len; i++) {
+        if (arr[i] > -0.0001 && arr[i] < 0)  { //Prevent printing of -0.0000
+            printf("%.4f", 0.0);
+        }
+        else {
+            printf("%.4f", arr[i]);
+        }
+        if (i + 1 != len) {
+            printf(",");
+        }
+    }
+    printf("\n");
 }
 
 
@@ -550,11 +566,6 @@ unsigned int checkMatSymmetric(double ** mat, unsigned int rows, unsigned int co
         }
     }
     return TRUE;
-}
-
-
-double convertToKDigits(double num, unsigned int k) {
-    return (double)((int)(num * pow(10, k) + .5)) / pow(10, k);
 }
 
 
