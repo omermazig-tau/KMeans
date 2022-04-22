@@ -130,6 +130,17 @@ double ** jacobiAlgorithm(double ** mat, unsigned int n) {
     double ** vMat, **pMat, **newA, **oldA, *eigenValues, **eigenVectors, **oldVMat, **returnedMat, **matForMulti, **transP;
     unsigned int iter;
 
+    if(isDiagonal(mat, n)) {
+        eigenValues = getDiagSquaredMatrix(mat, n);
+        eigenVectors = mat;
+        returnedMat = addVectorFirstLineMatrix(eigenVectors, eigenValues, n, n);
+
+        free(eigenValues);
+        freeMat(eigenVectors, n);
+        return returnedMat;
+    }
+
+
     iter = 0;
     oldA = createCopyMat(mat, n, n);
     pMat = createMatrixP(oldA, n);
@@ -141,7 +152,7 @@ double ** jacobiAlgorithm(double ** mat, unsigned int n) {
     freeMat(matForMulti, n);
     freeMat(pMat, n);
 
-    while (!(isConvergenceDiag(newA, oldA, n)) && iter < MAX_NUM_ITER && !(isDiagonal(newA, n))) {
+    while (!(isConvergenceDiag(newA, oldA, n)) && iter < MAX_NUM_ITER) {
         iter++;
         freeMat(oldA, n);
         oldA = newA;
