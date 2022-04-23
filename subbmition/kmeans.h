@@ -18,6 +18,6 @@ double getDistance(const double * point1, const double * point2, unsigned int di
 void copyArrayIntoArray(double ** arrayToChange, double ** arrayToCopy, unsigned int rows, unsigned int cols);
 void freeMatrixMemory(double ** matrixToFree, unsigned int rows);
 
-static void get_new_centroids(unsigned int iterations, unsigned int rows, unsigned int cols, unsigned int k, double epsilon, double **dataPoints,double **centroids);
+void get_new_centroids(unsigned int iterations, unsigned int rows, unsigned int cols, unsigned int k, double epsilon, double **dataPoints,double **centroids);
 
 #endif
