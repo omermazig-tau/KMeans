@@ -98,7 +98,7 @@ def parse_command_line():
     else:
         raise ValueError
 
-    if k < 0 or goal not in ['spk', 'wam', 'ddg', 'lnorm', 'jacobi']:
+    if k < 0 or k == 1 or goal not in ['spk', 'wam', 'ddg', 'lnorm', 'jacobi']:
         raise ValueError
 
     return k, goal, file_name
