@@ -74,17 +74,6 @@ int main(int argc, char ** argv) {
         free(shape);
         return 0;
     }
-    else if (strcmp(goal, "spk") == 0) {
-        //Remove this - Only for debugging
-        //k value is arbitrary since `spk` doesn't return it
-        mat1 = spk(x, shape[0], shape[1], 0);
-        //int k = 26;
-        //printMat(mat1, shape[0], k);
-        freeMatrixMemory(mat1, shape[0]);
-        freeMatrixMemory(x, shape[0]);
-        free(shape);
-        return 0;
-    }
     else {
         printf(INPUT_ERR);
         return 1;
@@ -518,34 +507,6 @@ unsigned int isDiagonal(double ** mat, unsigned int n) {
         }
     }
     return TRUE;
-}
-
-double ** spk (double ** x, unsigned int rows, unsigned int cols, unsigned int k) {
-    double **mat1, **mat2, **mat3, **mat4, **mat5, **tMat;
-
-    mat1 = getWeightAdjacency(x, rows, cols);
-    mat2 = getDiagonalDegreeMat(mat1, rows);
-    mat3 = getNormalizedGraphLaplacian(mat1, mat2, rows);
-    mat4 = jacobiAlgorithm(mat3, rows);
-
-    if (k == 0) {
-        k = determineK(mat4[0], rows);
-        if (k == 1) {
-            //TODO - Omer - need to find a different way to do alert the error here
-            printf(NOT_INPUT_ERR);
-            exit(1);
-        }
-    }
-    mat5 = getKFirstEigenvectors(mat4[0], mat4 + 1, rows, k);
-    tMat = calcTMat(mat5, rows, k);
-
-    freeMatrixMemory(mat1, rows);
-    freeMatrixMemory(mat2, rows);
-    freeMatrixMemory(mat3, rows);
-    freeMatrixMemory(mat4, rows + 1);
-    freeMatrixMemory(mat5, rows);
-
-    return tMat;
 }
 
 unsigned int checkMatSymmetric(double ** mat, unsigned int rows, unsigned int cols) {
