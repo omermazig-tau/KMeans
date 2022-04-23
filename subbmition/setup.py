@@ -10,7 +10,7 @@ setup(name='mykmeanssp',
       version='1.0',
       description='kmeans c api',
       ext_modules=[
-          Extension('mykmeanssp', sources=['kmeansApi.c'])
+          Extension('mykmeanssp', sources=['kmeans.c', 'kmeansApi.c'])
       ]
       )
 
