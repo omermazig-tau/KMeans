@@ -1,1 +1,1 @@
-gcc -ansi -Wall -Wextra -Werror -pedantic-errors spkmeans.c -lm -o spkmeans
+gcc -ansi -Wall -Wextra -Werror -pedantic-errors spkmeans.c kmeans.c -lm -o spkmeans
