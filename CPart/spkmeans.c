@@ -194,15 +194,10 @@ double ** jacobiAlgorithm(double ** mat, unsigned int n) {
 // Helpful methods
 
 double ** createCopyMat(double ** mat, unsigned int rows, unsigned int cols) {
-    unsigned int i, j;
     double ** copyMat;
 
     copyMat = createZeroMatrix(rows, cols);
-    for (i = 0; i < rows; i++) {
-        for (j = 0; j < cols; j++) {
-            copyMat[i][j] = mat[i][j];
-        }
-    }
+    copyArrayIntoArray(copyMat, mat, rows, cols);
     return copyMat;
 }
 
