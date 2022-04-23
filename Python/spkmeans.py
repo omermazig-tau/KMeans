@@ -91,8 +91,6 @@ def main():
 
     except Exception as e:
         print("An Error Has Occurred")
-        # TODO - remove the raise before submission
-        raise e
 
 
 if __name__ == '__main__':
