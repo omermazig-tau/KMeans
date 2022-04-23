@@ -1,5 +1,4 @@
 from distutils.core import setup, Extension
-import os
 
 """
 The old way of doing things, using distutils.

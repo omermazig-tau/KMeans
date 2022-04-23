@@ -101,7 +101,6 @@ def main():
 
     except Exception as e:
         print("An Error Has Occurred")
-        raise e  # TODO - replace this to return once we're done
 
 
 def write_centroids_to_file(file_output, centroids):
