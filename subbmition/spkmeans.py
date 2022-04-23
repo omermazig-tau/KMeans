@@ -156,7 +156,7 @@ def main():
     try:
         try:
             k, goal, file_path = parse_command_line()
-        except ValueError:
+        except Exception:
             print("Invalid Input!")
             return
 
