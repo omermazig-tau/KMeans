@@ -13,6 +13,13 @@ DEFAULT_ITERATIONS_NUMBER = 300
 
 # KMMEANS++ Functions
 def get_list_of_initial_centroids(k, data_points):
+    """
+    Getting the list of initial centroids as instructed in the kmeans++ method.
+
+    :param k: Desired number of initial centroids
+    :param data_points: The data points
+    :return: Initial centroids and their indexes
+    """
     index_initial_centroids = list()
     data_points.sort_index(inplace=True)
     cols = data_points.shape[1]
