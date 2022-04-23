@@ -44,7 +44,8 @@ static PyObject* fit(PyObject *self, PyObject *args)
     PyObject* flattenCentroids;
     PyObject* flattenDataPoints;
 
-    if (!PyArg_ParseTuple(args, "iiiidOO", &iterations, &rows, &cols, &k, &epsilon, &flattenCentroids, &flattenDataPoints))
+    if (!PyArg_ParseTuple(args, "iiiidOO", &iterations, &rows, &cols, &k, &epsilon,
+                          &flattenCentroids, &flattenDataPoints))
         return NULL;
 
     double **centroids = getMatrixFromFlattenMatrix(flattenCentroids, k, cols);
