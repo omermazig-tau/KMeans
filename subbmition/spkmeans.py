@@ -4,8 +4,8 @@ import numpy as np
 import pandas as pd
 from typing import List, Tuple
 
-from Python import spkmeans_api
-from Python import mykmeanssp
+import spkmeans_api
+import mykmeanssp
 
 DEFAULT_ITERATIONS_NUMBER = 300
 
