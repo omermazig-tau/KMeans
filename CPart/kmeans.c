@@ -1,12 +1,22 @@
 #include "kmeans.h"
 
-double ** createMatrix(unsigned int rows, unsigned int cols) {
+double ** createZeroMatrix(unsigned int rows, unsigned int cols) {
     unsigned int i;
-    double **array = (double **) malloc(rows * sizeof(double *));
-    for(i = 0; i < rows; i++) {
-        array[i] = (double *) malloc(cols * sizeof(*(array[i])));
+    double ** mat;
+
+    mat = (double **)malloc(sizeof(double *) * rows);
+    if(!mat) {
+        printf(NOT_INPUT_ERR);
+        exit(1);
     }
-    return array;
+    for (i = 0; i < rows; i++) {
+        mat[i] = (double *)calloc(cols, sizeof(double));
+        if(!mat[i]) {
+            printf(NOT_INPUT_ERR);
+            exit(1);
+        }
+    }
+    return mat;
 }
 
 void freeMatrixMemory(double ** matrixToFree, unsigned int rows){
@@ -51,7 +61,7 @@ void get_new_centroids(unsigned int iterations, unsigned int rows, unsigned int 
     unsigned int epsilonCondition = TRUE;
     unsigned int currentIteration = 0;
     unsigned int *centroidsLengths = calloc(k, sizeof(int));
-    double **newCentroids = createMatrix(k, cols);
+    double **newCentroids = createZeroMatrix(k, cols);
 
     while (epsilonCondition == TRUE && currentIteration < iterations) {
         epsilonCondition = FALSE;

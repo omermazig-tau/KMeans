@@ -31,8 +31,8 @@ int main(int argc, char ** argv) {
     if (strcmp(goal, goalOptions[0]) == 0) {
         mat1 = getWeightAdjacency(x, shape[0], shape[1]);
         printMat(mat1, shape[0], shape[0]);
-        freeMat(mat1, shape[0]);
-        freeMat(x, shape[0]);
+        freeMatrixMemory(mat1, shape[0]);
+        freeMatrixMemory(x, shape[0]);
         free(shape);
         return 0;
     }
@@ -41,9 +41,9 @@ int main(int argc, char ** argv) {
         mat1 = getWeightAdjacency(x, shape[0], shape[1]);
         mat2 = getDiagonalDegreeMat(mat1, shape[0]);
         printMat(mat2, shape[0], shape[0]);
-        freeMat(mat1, shape[0]);
-        freeMat(mat2, shape[0]);
-        freeMat(x, shape[0]);
+        freeMatrixMemory(mat1, shape[0]);
+        freeMatrixMemory(mat2, shape[0]);
+        freeMatrixMemory(x, shape[0]);
         free(shape);
         return 0;
     }
@@ -53,10 +53,10 @@ int main(int argc, char ** argv) {
         mat2 = getDiagonalDegreeMat(mat1, shape[0]);
         mat3 = getNormalizedGraphLaplacian(mat1, mat2, shape[0]);
         printMat(mat3, shape[0], shape[0]);
-        freeMat(mat1, shape[0]);
-        freeMat(mat2, shape[0]);
-        freeMat(mat3, shape[0]);
-        freeMat(x, shape[0]);
+        freeMatrixMemory(mat1, shape[0]);
+        freeMatrixMemory(mat2, shape[0]);
+        freeMatrixMemory(mat3, shape[0]);
+        freeMatrixMemory(x, shape[0]);
         free(shape);
         return 0;
     }
@@ -69,8 +69,8 @@ int main(int argc, char ** argv) {
         mat1 = jacobiAlgorithm(x, shape[0]);
         printArrNoMinusZeros(mat1[0], shape[0]);
         printMat(mat1 + 1, shape[0], shape[0]);
-        freeMat(mat1, shape[0] + 1);
-        freeMat(x, shape[0]);
+        freeMatrixMemory(mat1, shape[0] + 1);
+        freeMatrixMemory(x, shape[0]);
         free(shape);
         return 0;
     }
@@ -80,8 +80,8 @@ int main(int argc, char ** argv) {
         mat1 = spk(x, shape[0], shape[1], 0);
         //int k = 26;
         //printMat(mat1, shape[0], k);
-        freeMat(mat1, shape[0]);
-        freeMat(x, shape[0]);
+        freeMatrixMemory(mat1, shape[0]);
+        freeMatrixMemory(x, shape[0]);
         free(shape);
         return 0;
     }
@@ -131,10 +131,10 @@ double ** getNormalizedGraphLaplacian(double ** weights, double ** diagDegreeMat
     mat3 = multiSquaredMatrices(powMinusHalfD, weights, n);
     mat2 = multiSquaredMatrices(mat3, powMinusHalfD, n);
     NormalizedGraphLaplacian = subtractSquaredMatrices(mat1, mat2, n);
-    freeMat(mat1, n);
-    freeMat(mat2, n);
-    freeMat(mat3, n);
-    freeMat(powMinusHalfD, n);
+    freeMatrixMemory(mat1, n);
+    freeMatrixMemory(mat2, n);
+    freeMatrixMemory(mat3, n);
+    freeMatrixMemory(powMinusHalfD, n);
     return NormalizedGraphLaplacian;
 }
 
@@ -149,7 +149,7 @@ double ** jacobiAlgorithm(double ** mat, unsigned int n) {
         returnedMat = addVectorFirstLineMatrix(eigenVectors, eigenValues, n, n);
 
         free(eigenValues);
-        freeMat(eigenVectors, n);
+        freeMatrixMemory(eigenVectors, n);
         return returnedMat;
     }
 
@@ -163,16 +163,16 @@ double ** jacobiAlgorithm(double ** mat, unsigned int n) {
         oldA = newA;
         pMat = createMatrixP(oldA, n);
         matForMulti = multiSquaredMatrices(vMat, pMat, n);
-        freeMat(vMat, n);
+        freeMatrixMemory(vMat, n);
         vMat = matForMulti;
         transP = transformSquaredMatrix(pMat, n);
         matForMulti = multiSquaredMatrices(transP, oldA, n);
         newA = multiSquaredMatrices(matForMulti, pMat, n);
 
-        freeMat(matForMulti, n);
-        freeMat(oldA, n);
-        freeMat(transP, n);
-        freeMat(pMat, n);
+        freeMatrixMemory(matForMulti, n);
+        freeMatrixMemory(oldA, n);
+        freeMatrixMemory(transP, n);
+        freeMatrixMemory(pMat, n);
 
         sumNew = getSumSquaredOffDiagElement(newA, n);
         iter++;
@@ -180,37 +180,18 @@ double ** jacobiAlgorithm(double ** mat, unsigned int n) {
     while ((sumOld - sumNew > EPSILON) && iter < MAX_NUM_ITER);
 
     eigenValues = getDiagSquaredMatrix(newA, n);
-    freeMat(newA, n);
+    freeMatrixMemory(newA, n);
     eigenVectors = vMat;
     returnedMat = addVectorFirstLineMatrix(eigenVectors, eigenValues, n, n);
 
     free(eigenValues);
-    freeMat(eigenVectors, n);
+    freeMatrixMemory(eigenVectors, n);
     return returnedMat;
 }
 
 
 
 // Helpful methods
-
-double ** createZeroMatrix(unsigned int rows, unsigned int cols) {
-    unsigned int i;
-    double ** mat;
-
-    mat = (double **)malloc(sizeof(double *) * rows);
-    if(!mat) {
-        printf(NOT_INPUT_ERR);
-        exit(1);
-    }
-    for (i = 0; i < rows; i++) {
-        mat[i] = (double *)calloc(cols, sizeof(double));
-        if(!mat[i]) {
-            printf(NOT_INPUT_ERR);
-            exit(1);
-        }
-    }
-    return mat;
-}
 
 double ** createCopyMat(double ** mat, unsigned int rows, unsigned int cols) {
     unsigned int i, j;
@@ -556,15 +537,6 @@ unsigned int isDiagonal(double ** mat, unsigned int n) {
     return TRUE;
 }
 
-void freeMat(double ** mat, unsigned int rows){
-    unsigned int i;
-
-    for (i = 0; i < rows; i++) {
-        free(mat[i]);
-    }
-    free(mat);
-}
-
 double ** spk (double ** x, unsigned int rows, unsigned int cols, unsigned int k) {
     double **mat1, **mat2, **mat3, **mat4, **mat5, **tMat;
 
@@ -584,11 +556,11 @@ double ** spk (double ** x, unsigned int rows, unsigned int cols, unsigned int k
     mat5 = getKFirstEigenvectors(mat4[0], mat4 + 1, rows, k);
     tMat = calcTMat(mat5, rows, k);
 
-    freeMat(mat1, rows);
-    freeMat(mat2, rows);
-    freeMat(mat3, rows);
-    freeMat(mat4, rows + 1);
-    freeMat(mat5, rows);
+    freeMatrixMemory(mat1, rows);
+    freeMatrixMemory(mat2, rows);
+    freeMatrixMemory(mat3, rows);
+    freeMatrixMemory(mat4, rows + 1);
+    freeMatrixMemory(mat5, rows);
 
     return tMat;
 }

@@ -13,9 +13,11 @@
 
 #define TRUE 1
 #define FALSE 0
+#define INPUT_ERR "Invalid Input!"
+#define NOT_INPUT_ERR "Invalid Input!"
 
 
-double **createMatrix(unsigned int rows, unsigned int cols);
+double ** createZeroMatrix (unsigned int rows, unsigned int cols);
 double getDistance(const double * point1, const double * point2, unsigned int dimNum);
 void copyArrayIntoArray(double ** arrayToChange, double ** arrayToCopy, unsigned int rows, unsigned int cols);
 void freeMatrixMemory(double ** matrixToFree, unsigned int rows);
