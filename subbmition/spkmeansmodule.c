@@ -113,7 +113,7 @@ static PyObject* get_jacobi_matrix(PyObject *self, PyObject *args)
 
     double **matrix = getMatrixFromFlattenMatrix(flattenMatrix, rows, cols);
 
-    if (!checkMatSymmetric(matrix, rows, cols)) { //Not symmetric of squared
+    if (!checkMatSymmetric(matrix, rows, cols)) {
         return NULL;
     }
 
@@ -137,8 +137,6 @@ static PyObject* get_spk_matrix(PyObject *self, PyObject *args) {
 
     double **x = getMatrixFromFlattenMatrix(flattenMatrix, rows, cols);
 
-    //From here - Roe's part
-
     double **mat1, **mat2, **mat3, **mat4, **mat5, **tMat;
 
     mat1 = getWeightAdjacency(x, rows, cols);
@@ -160,8 +158,6 @@ static PyObject* get_spk_matrix(PyObject *self, PyObject *args) {
     freeMatrixMemory(mat3, rows);
     freeMatrixMemory(mat4, rows + 1);
     freeMatrixMemory(mat5, rows);
-
-    //Until here - Roe's part
 
     PyObject* newFlattenMatrix = getFlattenMatrixFromMatrix(tMat, rows, k);
 
