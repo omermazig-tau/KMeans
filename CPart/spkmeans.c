@@ -99,7 +99,7 @@ double ** getWeightAdjacency(double ** x, unsigned int n, unsigned int d) {
     for (i = 0; i < n; i++) {
         for (j = 0; j < n; j++) {
             if (i != j) {
-                weights[i][j] = exp(-getDistanceVectors(x[i], x[j], d) / 2);
+                weights[i][j] = exp(-getDistance(x[i], x[j], d) / 2);
             }
         }
     }
@@ -204,18 +204,6 @@ double ** createCopyMat(double ** mat, unsigned int rows, unsigned int cols) {
         }
     }
     return copyMat;
-}
-
-
-double getDistanceVectors(double * arr1, double * arr2, unsigned int length) {
-    double sum;
-    unsigned int i;
-
-    sum = 0;
-    for (i = 0; i < length; i++) {
-        sum += pow((arr1[i] - arr2[i]), 2);
-    }
-    return sqrt(sum);
 }
 
 double ** subtractSquaredMatrices(double ** mat1, double ** mat2, unsigned int n) {

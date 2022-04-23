@@ -20,7 +20,6 @@ double ** getDiagonalDegreeMat(double ** weights, unsigned int n);
 double ** getNormalizedGraphLaplacian(double ** weights, double ** diagDegreeMat, unsigned int n);
 double ** jacobiAlgorithm(double ** mat, unsigned int n);
 double ** createCopyMat(double ** mat, unsigned int rows, unsigned int cols);
-double getDistanceVectors(double * arr1, double * arr2, unsigned int length);
 double ** subtractSquaredMatrices(double ** mat1, double ** mat2, unsigned int n);
 double ** multiSquaredMatrices(double ** mat1, double ** mat2, unsigned int n);
 double ** getPowMinusHalfDiagMat(double ** mat, unsigned int n);
