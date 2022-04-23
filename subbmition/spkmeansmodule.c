@@ -1,7 +1,6 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
-#include "spkmeans.c"
-#include "kmeans.c"
+#include "spkmeans.h"
 
 
 PyObject* getFlattenMatrixFromMatrix(double ** matrix, unsigned int rows, unsigned int cols) {

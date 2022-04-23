@@ -18,6 +18,6 @@ setup(name='spkmeans_api',
       version='1.0',
       description='spkmeans c api',
       ext_modules=[
-          Extension('spkmeans_api', sources=['spkmeansmodule.c'])
+          Extension('spkmeans_api', sources=['kmeans.c', 'spkmeans.c', 'spkmeansmodule.c'])
       ]
       )
