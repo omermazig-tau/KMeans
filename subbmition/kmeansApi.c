@@ -23,7 +23,7 @@ PyObject* getFlattenMatrixFromMatrix(double ** matrix, unsigned int rows, unsign
 double ** getMatrixFromFlattenMatrix(PyObject* flattenMatrix, unsigned int rows, unsigned int cols) {
     unsigned int i;
     unsigned int j;
-    double **matrix = createMatrix(rows, cols);
+    double **matrix = createZeroMatrix(rows, cols);
 
     for(i = 0; i < rows; i++) {
         for(j = 0; j < cols; j++) {

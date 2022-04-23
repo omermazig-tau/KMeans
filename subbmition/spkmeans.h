@@ -1,17 +1,10 @@
 #ifndef CPART_SPKMEANS_H
 #define CPART_SPKMEANS_H
 
-#define TRUE 1
-#define FALSE 0
-#define INPUT_ERR "Invalid Input!"
-#define NOT_INPUT_ERR "Invalid Input!"
 #define MAX_NUM_ITER 100
 #define EPSILON (pow(10, -5))
 
-#include <math.h>
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "kmeans.h"
 
 
 typedef struct Pair {
@@ -22,9 +15,7 @@ double ** getWeightAdjacency(double ** x, unsigned int n, unsigned int d);
 double ** getDiagonalDegreeMat(double ** weights, unsigned int n);
 double ** getNormalizedGraphLaplacian(double ** weights, double ** diagDegreeMat, unsigned int n);
 double ** jacobiAlgorithm(double ** mat, unsigned int n);
-double ** createZeroMatrix (unsigned int rows, unsigned int cols);
 double ** createCopyMat(double ** mat, unsigned int rows, unsigned int cols);
-double getDistanceVectors(double * arr1, double * arr2, unsigned int length);
 double ** subtractSquaredMatrices(double ** mat1, double ** mat2, unsigned int n);
 double ** multiSquaredMatrices(double ** mat1, double ** mat2, unsigned int n);
 double ** getPowMinusHalfDiagMat(double ** mat, unsigned int n);
@@ -42,8 +33,7 @@ unsigned int * getShapeMatrixFile(FILE * f);
 double ** createMatFromFile(FILE * f, const unsigned int * shape);
 void printMat(double ** mat, unsigned int rows, unsigned int cols);
 unsigned int isDiagonal(double ** mat, unsigned int n);
-void freeMat(double ** mat, unsigned int rows);
-double ** spk (double ** x, unsigned int rows, unsigned int cols, unsigned int k);
+
 unsigned int checkMatSymmetric(double ** mat, unsigned int rows, unsigned int cols);
 int getSign(double num);
 int cmp(const void *a, const void *b);
