@@ -1,4 +1,5 @@
 import itertools
+import os
 import sys
 import numpy as np
 import pandas as pd
@@ -101,6 +102,9 @@ def parse_command_line():
     if k < 0 or k == 1 or goal not in ['spk', 'wam', 'ddg', 'lnorm', 'jacobi']:
         raise ValueError
 
+    if not os.path.isfile(file_name):
+        raise ValueError
+
     return k, goal, file_name
 
 
@@ -159,6 +163,11 @@ def main():
         matrix = read_date_from_file(file_path)
         rows = len(matrix)
         cols = len(matrix[0])
+
+        if k > rows:
+            print("Invalid Input!")
+            return
+
         flatten_matrix = tuple(itertools.chain.from_iterable(matrix))
 
         if goal == 'spk':
