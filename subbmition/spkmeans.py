@@ -39,6 +39,16 @@ def get_list_of_initial_centroids(k, data_points):
 
 
 def _get_centroids_from_c(data_points, initial_centroids, iterations, k, epsilon):
+    """
+    Get the centroids via C api
+
+    :param data_points: The data points
+    :param initial_centroids: Centroids to start iterating from
+    :param iterations: Iteration
+    :param k: Number of desired centroids
+    :param epsilon: Convergence const
+    :return: Centroids as received by the algorithm from C
+    """
     rows = len(data_points)
     cols = len(data_points[0])
     flatten_initial_centroids = tuple(itertools.chain.from_iterable(initial_centroids))
@@ -50,6 +60,15 @@ def _get_centroids_from_c(data_points, initial_centroids, iterations, k, epsilon
 
 
 def apply_kmeans_pp(k, iterations, epsilon, data_points):
+    """
+    Do the actual kmeans++
+
+    :param k: number of centroids
+    :param iterations: number of iterarions
+    :param epsilon: Convergence const
+    :param data_points: The data points to find centroids to
+    :return: The centroids and initial indices as a tuple.
+    """
     initial_centroids_indexes, initial_centroids = get_list_of_initial_centroids(k, data_points.copy())
     if iterations == 0:
         return initial_centroids, initial_centroids_indexes
@@ -82,12 +101,22 @@ def print_output(list_centroids, list_index):
     print_matrix(list_centroids)
 
 
-def get_matrix_from_flattened_list(rows, cols, flatten_centroids: List[float]) -> List[List[float]]:
+def get_matrix_from_flattened_list(rows, cols, flatten_matrix: List[float]) -> List[List[float]]:
+    """
+    Example:
+
+    get_matrix_from_flattened_list([1,2,3,4,5,6,7,8,9], 3, 3) --> [[1,2,3],[4,5,6],[7,8,9]]
+
+    :param rows: number of rows
+    :param cols: Number of columns
+    :param flatten_matrix: The list to turn into a matrix
+    :return: A matrix
+    """
     matrix = []
     for i in range(rows):
         temp = []
         for j in range(cols):
-            temp.append(flatten_centroids[j + i * cols])
+            temp.append(flatten_matrix[j + i * cols])
         matrix.append(temp)
     return matrix
 
@@ -117,6 +146,15 @@ def read_date_from_file(filepath: str) -> List[Tuple[float]]:
 
 # API Functions
 def spk(flatten_matrix, rows, cols, k):
+    """
+    Preform spectral kmeans
+
+    :param flatten_matrix: The data as a flattend matrix
+    :param rows: Number of rows
+    :param cols: Number of columns
+    :param k: Number of desired centroids
+    :return: The centroids and initial indices as a tuple.
+    """
     flatten_matrix_result = spkmeans_api.get_spk_matrix(rows, cols, k, flatten_matrix)
     k = len(flatten_matrix_result) / rows
     if k == int(k):
@@ -131,6 +169,17 @@ def spk(flatten_matrix, rows, cols, k):
 
 
 def preform_specific_goal(flatten_matrix, rows, cols, goal):
+    """
+    Perform an actions which is not 'spk'. Can be one of:
+
+    "wam", "ddg", "lnorm", "jacobi"
+
+    :param flatten_matrix: The data as a flattend matrix
+    :param rows: Number of rows
+    :param cols: Number of columns
+    :param goal: The action to preform
+    :return: A result matrix from the action
+    """
     if goal == 'wam':
         flatten_matrix_result = spkmeans_api.get_weight_adjacency_matrix(rows, cols, flatten_matrix)
         cols = rows
